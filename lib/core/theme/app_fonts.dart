@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppFonts {
   static const notoSansKr = 'NotoSansKR';
   static const inter = 'Inter';
+  static const caveat = 'Caveat';
 }
 
 class AppTypography {
@@ -57,8 +58,18 @@ class AppTypography {
   static final btn_6 = _createStyle(fontSize: 14, fontWeight: FontWeight.w600);
 
   // Label (14px)
-  static final label_4 = _createStyle(fontSize: 14, fontWeight: FontWeight.w400);
+  static final label_4 =
+      _createStyle(fontSize: 14, fontWeight: FontWeight.w400);
 
   // Caption (12px)
   static final cap_4 = _createStyle(fontSize: 12, fontWeight: FontWeight.w400);
+
+  // App Title (24px)
+  static final appTitle = TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      fontFeatures: _features,
+      fontFamily: AppFonts.caveat,
+      height: 1.2,
+      leadingDistribution: TextLeadingDistribution.even);
 }
