@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         canvasColor: Colors.white,
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: SafeArea(child: const HomeScreen()),
       themeMode: ThemeMode.light,
     );
   }
