@@ -3,5 +3,17 @@ import 'package:typing_talk/core/base/base_intent.dart';
 import 'package:typing_talk/presentation/features/home/enums/practice_type.dart';
 
 sealed class HomeIntent extends BaseIntent {
-  HomeIntent();
+  const HomeIntent();
+}
+
+final class LoadHomeDataIntent extends HomeIntent {
+  const LoadHomeDataIntent();
+}
+
+final class StartQuickPracticeIntent extends HomeIntent {
+  const StartQuickPracticeIntent();
+}
+
+final class NavigateToPracticeIntent extends HomeIntent {
+  const NavigateToPracticeIntent();
 }

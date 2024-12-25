@@ -9,10 +9,10 @@ class HomeState with _$HomeState {
     @Default(0) int level,
     @Default(0) int currentXp,
     @Default(999) int nextLevelXp,
-    // @Default(DailyChallenge()) DailyChallenge dailyChallenge,
-    // @Default(DailyStats()) DailyStats dailyStats,
     @Default(0) int streakDays,
     @Default(false) bool isPremium,
+    @Default(false) bool isLoading,
+    String? error,
   }) = _HomeState;
 
   factory HomeState.fromJson(Map<String, dynamic> json) => _$HomeStateFromJson(json);
