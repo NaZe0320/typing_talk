@@ -8,10 +8,12 @@ class PracticeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [HomeAppBar(), Expanded(child: Text('연습화면'))],
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [HomeAppBar(), Expanded(child: Text('연습화면'))],
+        ),
       ),
     );
   }
