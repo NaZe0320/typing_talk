@@ -11,30 +11,37 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            HomeAppBar(),
-            Expanded(
-                child: SingleChildScrollView(
-              child: Column(
-                spacing: 8,
-                children: [
-                  Text('레벨', style: AppTypography.b3_6),
-                  Text('데일리', style: AppTypography.b3_6),
-                  TextButton(
-                      onPressed: () {
-                        print("이동");
-                        context.pushNamed(RouteNames.practice);
-                      },
-                      child: Text('빠른 시작', style: AppTypography.b3_6)),
-                  Text('통계', style: AppTypography.b3_6),
-                  Text('Navigation Card', style: AppTypography.b3_6),
-                ],
-              ),
-            ))
-          ],
+      body: SafeArea(
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              HomeAppBar(),
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          context.pushNamed(RouteNames.profile);
+                        },
+                        child: Text('프로필', style: AppTypography.b3_6)),
+                    TextButton(
+                        onPressed: () {
+                          context.pushNamed(RouteNames.practiceSetting);
+                        },
+                        child: Text('빠른 시작', style: AppTypography.b3_6)),
+                    TextButton(
+                        onPressed: () {
+                          context.pushNamed(RouteNames.statistic);
+                        },
+                        child: Text('통계', style: AppTypography.b3_6)),
+                  ],
+                ),
+              ))
+            ],
+          ),
         ),
       ),
     );

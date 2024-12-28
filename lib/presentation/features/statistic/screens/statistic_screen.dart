@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
 
-class PracticeScreen extends ConsumerWidget {
-  const PracticeScreen({super.key});
+class StatisticScreen extends ConsumerWidget {
+  const StatisticScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,14 +15,14 @@ class PracticeScreen extends ConsumerWidget {
           color: Colors.white,
           child: Column(
             children: [
-              DefaultAppBar('연습 (채팅)'),
+              DefaultAppBar('통계'),
               Expanded(
                   child: Center(
                       child: TextButton(
                           onPressed: () {
-                            context.pushNamed(RouteNames.practiceResult);
+                            context.go('/');
                           },
-                          child: Text('연습 (채팅) 화면'))))
+                          child: Text('통계 화면'))))
             ],
           ),
         ),
