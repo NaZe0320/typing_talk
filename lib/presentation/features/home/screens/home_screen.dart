@@ -15,6 +15,28 @@ class HomeScreen extends BaseScreen {
   }
 
   @override
+  Future<bool> onWillPop(BuildContext context, WidgetRef ref) async {
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('앱 종료'),
+        content: const Text('앱을 종료하시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('종료'),
+          ),
+        ],
+      ),
+    );
+    return shouldExit ?? false;
+  }
+
+  @override
   Widget buildContent(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
