@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:typing_talk/core/theme/app_colors.dart';
+import 'package:typing_talk/core/theme/app_fonts.dart';
+import 'package:typing_talk/presentation/common/widgets/icon_widget.dart';
+
+class NavigationButton extends StatelessWidget {
+  const NavigationButton(this.text, {super.key, required this.onTap});
+
+  final String text;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Ink(
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.defaultBorder),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Ink(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  spacing: 8,
+                  children: [
+                    IconWidget(assetName: 'chat', size: 24, onTap: () {}),
+                    Text(
+                      text,
+                      style: AppTypography.b3_6,
+                    ),
+                  ],
+                ),
+                IconWidget(assetName: 'arrow_right', size: 24, onTap: () {}),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

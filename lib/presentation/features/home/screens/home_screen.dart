@@ -6,6 +6,7 @@ import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/core/utils/app_logger.dart';
+import 'package:typing_talk/presentation/common/widgets/buttons/navigation_button.dart';
 import 'package:typing_talk/presentation/features/home/widgets/home_app_bar.dart';
 
 import 'dart:io';
@@ -16,6 +17,45 @@ class HomeScreen extends BaseScreen {
   @override
   Widget? buildHeader(BuildContext context, WidgetRef ref) {
     return const HomeAppBar();
+  }
+
+  @override
+  Widget buildContent(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                spacing: 8,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      context.pushNamed(RouteNames.profile);
+                    },
+                    child: Text('프로필', style: AppTypography.b3_6),
+                  ),
+                  NavigationButton(
+                    '빠른 시작',
+                    onTap: () {
+                      context.pushNamed(RouteNames.practiceSetting);
+                    },
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.pushNamed(RouteNames.statistic);
+                    },
+                    child: Text('통계', style: AppTypography.b3_6),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -49,41 +89,5 @@ class HomeScreen extends BaseScreen {
     }
 
     return (false, null);
-  }
-
-  @override
-  Widget buildContent(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              spacing: 8,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    context.pushNamed(RouteNames.profile);
-                  },
-                  child: Text('프로필', style: AppTypography.b3_6),
-                ),
-                TextButton(
-                  onPressed: () {
-                    context.pushNamed(RouteNames.practiceSetting);
-                  },
-                  child: Text('빠른 시작', style: AppTypography.b3_6),
-                ),
-                TextButton(
-                  onPressed: () {
-                    context.pushNamed(RouteNames.statistic);
-                  },
-                  child: Text('통계', style: AppTypography.b3_6),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }
