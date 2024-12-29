@@ -11,6 +11,8 @@ import 'package:typing_talk/presentation/features/home/widgets/home_app_bar.dart
 
 import 'dart:io';
 
+import 'package:typing_talk/presentation/features/home/widgets/profile_widget.dart';
+
 class HomeScreen extends BaseScreen {
   const HomeScreen({super.key});
 
@@ -31,12 +33,7 @@ class HomeScreen extends BaseScreen {
               child: Column(
                 spacing: 8,
                 children: [
-                  TextButton(
-                    onPressed: () {
-                      context.pushNamed(RouteNames.profile);
-                    },
-                    child: Text('프로필', style: AppTypography.b3_6),
-                  ),
+                  ProfileWidget(),
                   NavigationButton(
                     '빠른 시작',
                     icon: 'chat',
