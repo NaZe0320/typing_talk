@@ -24,7 +24,7 @@ class PracticeSettingScreen extends BaseScreen {
               child: Center(
                   child: TextButton(
                       onPressed: () {
-                        context.pushNamed(RouteNames.practiceResult);
+                        context.pushNamed(RouteNames.practice);
                       },
                       child: Text('연습 설정 화면'))))
         ],

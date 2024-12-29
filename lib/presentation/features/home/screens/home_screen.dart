@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
+import 'package:typing_talk/core/utils/app_logger.dart';
 import 'package:typing_talk/presentation/features/home/widgets/home_app_bar.dart';
+
+import 'dart:io';
 
 class HomeScreen extends BaseScreen {
   const HomeScreen({super.key});
@@ -15,25 +19,36 @@ class HomeScreen extends BaseScreen {
   }
 
   @override
-  Future<bool> onWillPop(BuildContext context, WidgetRef ref) async {
+  Future<(bool, String?)> onWillPop(BuildContext context) async {
     final shouldExit = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('앱 종료'),
-        content: const Text('앱을 종료하시겠습니까?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('앱 종료'),
+            content: const Text('정말 앱을 종료하시겠습니까?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('취소'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('종료'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('종료'),
-          ),
-        ],
-      ),
-    );
-    return shouldExit ?? false;
+        ) ??
+        false;
+
+    if (shouldExit) {
+      // 플랫폼 별 앱 종료 처리
+      if (Platform.isAndroid) {
+        SystemNavigator.pop();
+      } else if (Platform.isIOS) {
+        exit(0);
+      }
+    }
+
+    return (false, null);
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// BaseScreen은 앱의 기본 화면 구조를 정의하는 추상 클래스입니다.
 ///
@@ -34,22 +35,23 @@ abstract class BaseScreen extends ConsumerWidget {
   /// 기본값은 흰색입니다.
   Color backgroundColor() => Colors.white;
 
-  /// 뒤로가기 버튼 동작을 처리합니다.
-  /// true를 반환하면 뒤로가기가 허용되고, false를 반환하면 뒤로가기가 취소됩니다.
-  Future<bool> onWillPop(BuildContext context, WidgetRef ref) async => true;
+  /// 뒤로가기 버튼 동작을 허용할지 결정합니다.
+  /// 기본값은 true입니다.
+  bool get enableWillPop => true;
+
+  /// 뒤로가기 동작을 정의합니다.
+  /// (bool, dynamic) 튜플을 반환합니다:
+  /// - bool: true면 화면이 종료되고, false면 화면이 유지됩니다.
+  /// - dynamic: 화면 종료 시 전달할 결과값 (선택사항)
+  ///
+  /// 기본 구현은 (true, null)을 반환하여 결과값 없이 즉시 화면을 종료합니다.
+
+  Future<(bool, dynamic)> onWillPop(BuildContext context) async => (true, null);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) return;
-
-        final bool shouldPop = await onWillPop(context, ref);
-        if (shouldPop && context.mounted) {
-          Navigator.pop(context);
-        }
-      },
       child: Scaffold(
         backgroundColor: backgroundColor(),
         body: SafeArea(
@@ -61,6 +63,14 @@ abstract class BaseScreen extends ConsumerWidget {
           ),
         ),
       ),
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (!didPop) {
+          final (shouldPop, popResult) = await onWillPop(context);
+          if (shouldPop && context.mounted) {
+            context.pop(popResult);
+          }
+        }
+      },
     );
   }
 }

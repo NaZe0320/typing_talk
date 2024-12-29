@@ -31,4 +31,10 @@ class PracticeScreen extends BaseScreen {
       ),
     );
   }
+
+  @override
+  Future<(bool, String?)> onWillPop(BuildContext context) async {
+    context.go('/');
+    return (false, null);
+  }
 }
