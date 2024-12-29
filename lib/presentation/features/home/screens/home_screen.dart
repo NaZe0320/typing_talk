@@ -39,15 +39,17 @@ class HomeScreen extends BaseScreen {
                   ),
                   NavigationButton(
                     '빠른 시작',
+                    icon: 'chat',
                     onTap: () {
                       context.pushNamed(RouteNames.practiceSetting);
                     },
                   ),
-                  TextButton(
-                    onPressed: () {
+                  NavigationButton(
+                    '통계',
+                    icon: 'trophy',
+                    onTap: () {
                       context.pushNamed(RouteNames.statistic);
                     },
-                    child: Text('통계', style: AppTypography.b3_6),
                   ),
                 ],
               ),

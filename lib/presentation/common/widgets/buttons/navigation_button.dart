@@ -4,10 +4,11 @@ import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/presentation/common/widgets/icon_widget.dart';
 
 class NavigationButton extends StatelessWidget {
-  const NavigationButton(this.text, {super.key, required this.onTap});
+  const NavigationButton(this.text, {super.key, required this.onTap, required this.icon});
 
   final String text;
   final VoidCallback onTap;
+  final String? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +30,10 @@ class NavigationButton extends StatelessWidget {
                 Row(
                   spacing: 8,
                   children: [
-                    IconWidget(assetName: 'chat', size: 24, onTap: () {}),
+                    if (icon != null) IconWidget(assetName: icon!, size: 24, onTap: () {}),
                     Text(
                       text,
-                      style: AppTypography.b3_6,
+                      style: AppTypography.btn_6,
                     ),
                   ],
                 ),
