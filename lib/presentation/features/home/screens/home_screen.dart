@@ -38,6 +38,13 @@ class HomeScreen extends BaseScreen {
                     '빠른 시작',
                     icon: 'chat',
                     onTap: () {
+                      context.pushNamed(RouteNames.practice);
+                    },
+                  ),
+                  NavigationButton(
+                    '연습하기',
+                    icon: 'chat',
+                    onTap: () {
                       context.pushNamed(RouteNames.practiceSetting);
                     },
                   ),

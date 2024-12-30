@@ -30,14 +30,14 @@ class NavigationButton extends StatelessWidget {
                 Row(
                   spacing: 8,
                   children: [
-                    if (icon != null) IconWidget(assetName: icon!, size: 24, onTap: () {}),
+                    if (icon != null) IconWidget(assetName: icon!, size: 24),
                     Text(
                       text,
                       style: AppTypography.btn_6,
                     ),
                   ],
                 ),
-                IconWidget(assetName: 'arrow_right', size: 24, onTap: () {}),
+                IconWidget(assetName: 'arrow_right', size: 24),
               ],
             ),
           ),
