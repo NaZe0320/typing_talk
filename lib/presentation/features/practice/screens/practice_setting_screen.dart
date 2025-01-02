@@ -27,31 +27,26 @@ class PracticeSettingScreen extends BaseScreen {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Column(
-              spacing: 24,
-              children: [
-                SelectGroup(
-                  label: '연습 모드',
-                  options: PracticeOptions.modeOptions,
-                  selectionType: SelectionType.single,
-                  initialValue: practiceState.selectedMode,
-                  onChanged: viewModel.selectMode,
-                ),
-                SelectGroup(
-                  label: '시간 설정',
-                  options: PracticeOptions.timeOptions,
-                  selectionType: SelectionType.single,
-                  initialValue: practiceState.selectedTimeLimit,
-                  onChanged: viewModel.selectTimeLimit,
-                ),
-                SelectGroup(
-                  label: '주제 선택 (다중 선택 가능)',
-                  options: PracticeOptions.topicOptions,
-                  selectionType: SelectionType.multiple,
-                  initialValues: practiceState.selectedTopics,
-                  onMultiChanged: viewModel.setTopics,
-                ),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                spacing: 24,
+                children: [
+                  /*SelectGroup(
+                    label: '연습 모드',
+                    options: PracticeOptions.modeOptions,
+                    selectionType: SelectionType.single,
+                    initialValue: practiceState.selectedMode,
+                    onChanged: viewModel.selectMode,
+                  ),
+                  SelectGroup(
+                    label: '시간 설정',
+                    options: PracticeOptions.timeOptions,
+                    selectionType: SelectionType.single,
+                    initialValue: practiceState.selectedTimeLimit,
+                    onChanged: viewModel.selectTimeLimit,
+                  ),*/
+                ],
+              ),
             ),
           ),
           Text('${practiceState.selectedMode}\n${practiceState.selectedTimeLimit}\n${practiceState.selectedTopics}'),
