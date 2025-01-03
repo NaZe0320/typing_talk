@@ -27,7 +27,8 @@ class AppColors {
   static const Color primaryText = Color(0xFF1E293B);
   static const Color secondaryText = Color(0xFF64748B);
   static const Color disabledText = Color(0xFFA1A1AA);
-  static const Color pointWhite = Color(0xFFFFFFFF);
+  static const Color pointWhite = Color(0xFF2196F3);
+  static const Color blueText = Color(0xFF1976D2);
 
   // State Colors
   static const Color successBackground = Color(0xFFDCFCE7);

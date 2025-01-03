@@ -5,6 +5,7 @@ part 'practice_view_model.g.dart';
 
 @riverpod
 class PracticeViewModel extends _$PracticeViewModel {
+  @override
   PracticeState build() {
     return const PracticeState();
   }
