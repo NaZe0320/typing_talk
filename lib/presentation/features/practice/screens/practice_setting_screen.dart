@@ -28,6 +28,7 @@ class PracticeSettingScreen extends BaseScreen {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  _buildSectionTitle('연습 모드', Icons.book),
                   SizedBox(height: 8),
                   Row(
                     children: [
@@ -52,9 +53,7 @@ class PracticeSettingScreen extends BaseScreen {
                       ),
                     ],
                   ),
-
                   SizedBox(height: 24),
-
                   // Text Selection
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
