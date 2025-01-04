@@ -139,11 +139,9 @@ class PracticeSettingScreen extends BaseScreen {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: ElevatedButton(
-              onPressed: () {
-                context.pushNamed(RouteNames.practice);
-              },
+              onPressed: state.isStartButtonEnabled ? () => context.pushNamed(RouteNames.practice) : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
+                backgroundColor: state.isStartButtonEnabled ? AppColors.primaryBlue : AppColors.gray300,
                 minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -152,7 +150,7 @@ class PracticeSettingScreen extends BaseScreen {
               child: Text(
                 '시작하기',
                 style: AppTypography.btn_6.copyWith(
-                  color: AppColors.white,
+                  color: state.isStartButtonEnabled ? AppColors.white : AppColors.gray500,
                 ),
               ),
             ),

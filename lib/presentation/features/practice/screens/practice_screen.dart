@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
@@ -12,7 +13,14 @@ class PracticeScreen extends BaseScreen {
 
   @override
   Widget? buildHeader(BuildContext context, WidgetRef ref) {
-    return const DefaultAppBar('타자 연습');
+    final state = ref.watch(practiceViewModelProvider);
+    return DefaultAppBar(state.practiceMode == 'practice' ? '타자연습' : '타자검정');
+  }
+
+  @override
+  Future<(bool, String?)> onWillPop(BuildContext context) async {
+    context.go('/');
+    return (false, null);
   }
 
   @override
@@ -79,8 +87,6 @@ class PracticeScreen extends BaseScreen {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: viewModel.updateCurrentInput,
-                    onSubmitted: (_) => viewModel.submitInput(),
                     decoration: InputDecoration(
                       hintText: '문장을 입력하세요',
                       hintStyle: AppTypography.b2_4.copyWith(
@@ -93,15 +99,14 @@ class PracticeScreen extends BaseScreen {
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                        horizontal: 12,
+                        vertical: 4,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
                 InkWell(
-                  onTap: viewModel.submitInput,
                   child: const Icon(Icons.send, color: AppColors.primaryBlue),
                 ),
               ],

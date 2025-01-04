@@ -22,7 +22,11 @@ class PracticeSettingViewModel extends _$PracticeSettingViewModel {
   }
 
   void togglePracticeMode(String mode) {
-    state = state.copyWith(practiceMode: mode);
+    state = state.copyWith(
+      practiceMode: mode,
+      timeLimit: mode == 'test' ? const Duration(minutes: 5) : null,
+    );
+    _updateStartButtonState();
   }
 
   void toggleTextSelection(int id) {
@@ -33,9 +37,17 @@ class PracticeSettingViewModel extends _$PracticeSettingViewModel {
       currentSelection.add(id);
     }
     state = state.copyWith(selectedTexts: currentSelection);
+    _updateStartButtonState();
   }
 
-  void toggleRealtimeFeedback() {
-    state = state.copyWith(realtimeFeedback: !state.realtimeFeedback);
+  void _updateStartButtonState() {
+    state = state.copyWith(
+      isStartButtonEnabled: state.selectedTexts.isNotEmpty,
+    );
+  }
+
+  // 선택된 문장들 가져오기
+  List<String> getSelectedSentences() {
+    return state.availableTexts.where((text) => state.selectedTexts.contains(text.id)).map((e) => e.title).toList();
   }
 }

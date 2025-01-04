@@ -8,7 +8,8 @@ class PracticeSettingState with _$PracticeSettingState {
   const factory PracticeSettingState({
     @Default('practice') String practiceMode,
     @Default([]) List<int> selectedTexts,
-    @Default(true) bool realtimeFeedback,
     @Default([]) List<TextItem> availableTexts,
+    @Default(false) bool isStartButtonEnabled,
+    Duration? timeLimit,
   }) = _PracticeSettingState;
 }
