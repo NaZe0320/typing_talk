@@ -233,7 +233,7 @@ class PracticeSettingScreen extends BaseScreen {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.secondaryBlue : AppColors.surface,
-          border: isSelected ? Border.all(color: AppColors.primaryBlue, width: 2) : null,
+          border: Border.all(color: isSelected ? AppColors.primaryBlue : AppColors.surface, width: 1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
