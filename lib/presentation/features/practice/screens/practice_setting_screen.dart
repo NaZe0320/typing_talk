@@ -7,6 +7,7 @@ import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/core/theme/app_gradients.dart';
 import 'package:typing_talk/domain/entities/text_item.dart';
+import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_setting_view_model.dart';
 
@@ -40,8 +41,8 @@ class PracticeSettingScreen extends BaseScreen {
                           title: '타자 연습',
                           subtitle: '시간 제한 없음',
                           icon: Icons.message,
-                          isSelected: state.practiceMode == 'practice',
-                          onTap: () => viewModel.togglePracticeMode('practice'),
+                          isSelected: state.practiceMode == PracticeMode.practice,
+                          onTap: () => viewModel.togglePracticeMode(PracticeMode.practice),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -50,8 +51,8 @@ class PracticeSettingScreen extends BaseScreen {
                           title: '타자 검정',
                           subtitle: '5분 제한',
                           icon: Icons.timer,
-                          isSelected: state.practiceMode == 'test',
-                          onTap: () => viewModel.togglePracticeMode('test'),
+                          isSelected: state.practiceMode == PracticeMode.test,
+                          onTap: () => viewModel.togglePracticeMode(PracticeMode.test),
                         ),
                       ),
                     ],

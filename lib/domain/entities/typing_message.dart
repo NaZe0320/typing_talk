@@ -8,8 +8,5 @@ class TypingMessage with _$TypingMessage {
     required String id,
     required String content,
     required bool isTarget, // true면 목표 문장, false면 사용자 입력
-    String? userInput,
-    @Default(false) bool isCompleted,
-    DateTime? completedAt,
   }) = _TypingMessage;
 }

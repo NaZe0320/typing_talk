@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:typing_talk/domain/entities/text_item.dart';
+import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_setting_state.dart';
 
 part 'practice_setting_view_model.g.dart';
@@ -21,10 +22,10 @@ class PracticeSettingViewModel extends _$PracticeSettingViewModel {
     return PracticeSettingState(availableTexts: texts);
   }
 
-  void togglePracticeMode(String mode) {
+  void togglePracticeMode(PracticeMode mode) {
     state = state.copyWith(
       practiceMode: mode,
-      timeLimit: mode == 'test' ? const Duration(minutes: 5) : null,
+      timeLimit: mode == PracticeMode.test ? const Duration(minutes: 5) : null,
     );
     _updateStartButtonState();
   }

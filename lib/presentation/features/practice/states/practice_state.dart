@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:typing_talk/domain/entities/typing_message.dart';
+import 'package:typing_talk/domain/enums/practice_mode.dart';
 
 part 'practice_state.freezed.dart';
 
@@ -8,6 +9,6 @@ class PracticeState with _$PracticeState {
   const factory PracticeState({
     @Default([]) List<TypingMessage> messages,
     Duration? timeLimit,
-    @Default('practice') String practiceMode,
+    @Default(PracticeMode.practice) PracticeMode practiceMode,
   }) = _PracticeState;
 }
