@@ -5,7 +5,6 @@ import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
-import 'package:typing_talk/core/theme/app_gradients.dart';
 import 'package:typing_talk/domain/entities/text_item.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
@@ -79,60 +78,60 @@ class PracticeSettingScreen extends BaseScreen {
                       )),
                   const SizedBox(height: 24),
                   // AI Feature Card
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: AppGradients.premiumGradient,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.psychology,
-                              color: AppColors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'AI 맞춤 문장 생성',
-                              style: AppTypography.b2_6.copyWith(
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'AI가 생성한 맞춤형 문장으로 연습해보세요.',
-                          style: AppTypography.b3_4.copyWith(
-                            color: AppColors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Handle premium upgrade
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.white,
-                            minimumSize: const Size(double.infinity, 36),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            '프리미엄으로 업그레이드',
-                            style: AppTypography.btn_5.copyWith(
-                              color: const Color(0xFFF59E0B),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   padding: const EdgeInsets.all(16),
+                  //   decoration: BoxDecoration(
+                  //     gradient: AppGradients.premiumGradient,
+                  //     borderRadius: BorderRadius.circular(12),
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Row(
+                  //         children: [
+                  //           const Icon(
+                  //             Icons.psychology,
+                  //             color: AppColors.white,
+                  //             size: 20,
+                  //           ),
+                  //           const SizedBox(width: 8),
+                  //           Text(
+                  //             'AI 맞춤 문장 생성',
+                  //             style: AppTypography.b2_6.copyWith(
+                  //               color: AppColors.white,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       const SizedBox(height: 8),
+                  //       Text(
+                  //         'AI가 생성한 맞춤형 문장으로 연습해보세요.',
+                  //         style: AppTypography.b3_4.copyWith(
+                  //           color: AppColors.white,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 12),
+                  //       ElevatedButton(
+                  //         onPressed: () {
+                  //           // Handle premium upgrade
+                  //         },
+                  //         style: ElevatedButton.styleFrom(
+                  //           backgroundColor: AppColors.white,
+                  //           minimumSize: const Size(double.infinity, 36),
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(8),
+                  //           ),
+                  //         ),
+                  //         child: Text(
+                  //           '프리미엄으로 업그레이드',
+                  //           style: AppTypography.btn_5.copyWith(
+                  //             color: const Color(0xFFF59E0B),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ),

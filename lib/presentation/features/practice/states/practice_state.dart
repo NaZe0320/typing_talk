@@ -8,6 +8,10 @@ part 'practice_state.freezed.dart';
 class PracticeState with _$PracticeState {
   const factory PracticeState({
     @Default([]) List<TypingMessage> messages,
+    @Default(0) int currentMessageIndex,
+    @Default(0) int currentWPM,
+    @Default(0.0) double accuracy,
+    @Default(false) bool isCompleted,
     Duration? timeLimit,
     @Default(PracticeMode.practice) PracticeMode practiceMode,
   }) = _PracticeState;
