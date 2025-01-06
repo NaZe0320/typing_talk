@@ -47,7 +47,7 @@ class PracticeScreen extends BaseScreen {
               _buildStatItem('정확도', '${state.accuracy.toStringAsFixed(1)}%'),
               _buildStatItem(
                 '진행률',
-                '${state.currentMessageIndex + 1}/${state.messages.length}',
+                '${state.currentMessageIndex + 1}/${state.allMessages.length}',
               ),
             ],
           ),
@@ -56,9 +56,9 @@ class PracticeScreen extends BaseScreen {
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             reverse: true,
-            itemCount: state.messages.length,
+            itemCount: state.allMessages.length,
             itemBuilder: (context, index) {
-              final message = state.messages[index];
+              final message = state.allMessages[index];
               final isCurrentMessage = index == state.currentMessageIndex;
               return _buildMessageBubble(
                 message: message,
@@ -70,7 +70,7 @@ class PracticeScreen extends BaseScreen {
         if (!state.isCompleted)
           _TypingInput(
             onChanged: viewModel.onTextInput,
-            targetContent: state.messages[state.currentMessageIndex].content,
+            targetContent: state.allMessages[state.currentMessageIndex].content,
           ),
       ],
     );
@@ -137,12 +137,6 @@ class PracticeScreen extends BaseScreen {
     );
   }
 
-  double _calculateMessageAccuracy(TypingMessage message) {
-    if (message.content.isEmpty) return 0;
-    final correctCount = message.characterStates.where((state) => state == CharacterState.correct).length;
-    return (correctCount / message.content.length) * 100;
-  }
-
   Widget _buildStatItem(String label, String value) {
     return Column(
       children: [
@@ -164,7 +158,6 @@ class PracticeScreen extends BaseScreen {
   }
 }
 
-// 입력 부분을 별도의 StatefulWidget으로 분리
 class _TypingInput extends StatefulWidget {
   const _TypingInput({
     required this.onChanged,
@@ -228,6 +221,7 @@ class _TypingInputState extends State<_TypingInput> {
             child: TextField(
               controller: _controller,
               autofocus: true,
+              onSubmitted: (_) => _handleTextChange(),
               decoration: InputDecoration(
                 hintText: '문장을 입력하세요',
                 hintStyle: AppTypography.b2_4.copyWith(
@@ -246,13 +240,11 @@ class _TypingInputState extends State<_TypingInput> {
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.send, color: AppColors.primaryBlue),
             onPressed: () {
-              if (_controller.text == widget.targetContent) {
-                _controller.clear();
-              }
+              _handleTextChange();
             },
           ),
         ],
