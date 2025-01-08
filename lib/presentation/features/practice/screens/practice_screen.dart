@@ -43,8 +43,6 @@ class PracticeScreen extends BaseScreen {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem('현재 타수', '${state.currentWPM}'),
-              _buildStatItem('정확도', '${state.accuracy.toStringAsFixed(1)}%'),
               _buildStatItem(
                 '진행률',
                 '${state.currentMessageIndex + 1}/${state.allMessages.length}',
@@ -53,66 +51,58 @@ class PracticeScreen extends BaseScreen {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            reverse: true,
-            itemCount: state.allMessages.length,
-            itemBuilder: (context, index) {
-              final message = state.allMessages[index];
-              final isCurrentMessage = index == state.currentMessageIndex;
-              return _buildMessageBubble(
-                message: message,
-                isCurrentMessage: isCurrentMessage,
-              );
-            },
+          child: SizedBox(
+            width: double.infinity,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: state.displayedMessages.length,
+              itemBuilder: (context, index) {
+                final message = state.displayedMessages[index];
+                return _buildMessageBubble(
+                  message: message,
+                );
+              },
+            ),
           ),
         ),
-        if (!state.isCompleted)
-          _TypingInput(
-            onChanged: viewModel.onTextInput,
-            targetContent: state.allMessages[state.currentMessageIndex].content,
-          ),
+        _TypingInput(onChanged: viewModel.onTextInput, onSubmit: viewModel.handleSubmit, targetContent: ""),
       ],
     );
   }
 
   Widget _buildMessageBubble({
     required TypingMessage message,
-    required bool isCurrentMessage,
   }) {
-    final isTargetMessage = message.userInput == null;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: isTargetMessage ? MainAxisAlignment.start : MainAxisAlignment.end,
-        children: [
-          Container(
-            constraints: const BoxConstraints(maxWidth: 280),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-            decoration: BoxDecoration(
-              color: isTargetMessage
-                  ? (isCurrentMessage ? AppColors.secondaryBlue : AppColors.surface)
-                  : AppColors.primaryBlue,
-              borderRadius: BorderRadius.circular(16),
-              border: isCurrentMessage && isTargetMessage ? Border.all(color: AppColors.primaryBlue) : null,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (isTargetMessage) _buildTargetMessage(message, isCurrentMessage) else _buildUserMessage(message),
-              ],
-            ),
+    return Row(
+      mainAxisAlignment: message.type == SentenceType.prompt ? MainAxisAlignment.start : MainAxisAlignment.end,
+      children: [
+        Container(
+          constraints: const BoxConstraints(maxWidth: 320), //TODO (화면 비율 따라 작성)
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
           ),
-        ],
-      ),
+          decoration: BoxDecoration(
+            color: message.type == SentenceType.prompt
+                ? message.status == SentenceStatus.current
+                    ? Colors.blue.shade50
+                    : Colors.grey.shade50
+                : Colors.green.shade50,
+            borderRadius: BorderRadius.circular(16),
+            border: message.status == SentenceStatus.current ? Border.all(color: Colors.blue.shade200) : null,
+          ),
+          child: Column(
+            children: [
+              message.type == SentenceType.prompt ? _buildTargetMessage(message) : _buildUserMessage(message),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildTargetMessage(TypingMessage message, bool isCurrentMessage) {
+  Widget _buildTargetMessage(TypingMessage message) {
     return RichText(
       text: TextSpan(
         children: List.generate(message.content.length, (index) {
@@ -120,7 +110,7 @@ class PracticeScreen extends BaseScreen {
           return TextSpan(
             text: char,
             style: AppTypography.b2_4.copyWith(
-              color: isCurrentMessage ? message.characterStates[index].color : AppColors.primaryText,
+              color: AppColors.primaryText,
             ),
           );
         }),
@@ -130,9 +120,9 @@ class PracticeScreen extends BaseScreen {
 
   Widget _buildUserMessage(TypingMessage message) {
     return Text(
-      message.userInput!,
+      message.content,
       style: AppTypography.b2_4.copyWith(
-        color: AppColors.white,
+        color: AppColors.primaryText,
       ),
     );
   }
@@ -162,9 +152,11 @@ class _TypingInput extends StatefulWidget {
   const _TypingInput({
     required this.onChanged,
     required this.targetContent,
+    required this.onSubmit,
   });
 
   final ValueChanged<String> onChanged;
+  final VoidCallback onSubmit;
   final String targetContent;
 
   @override
@@ -190,10 +182,6 @@ class _TypingInputState extends State<_TypingInput> {
 
   void _handleTextChange() {
     widget.onChanged(_controller.text);
-    // 입력이 완료되면 TextField를 초기화
-    if (_controller.text == widget.targetContent) {
-      _controller.clear();
-    }
   }
 
   @override
@@ -221,7 +209,10 @@ class _TypingInputState extends State<_TypingInput> {
             child: TextField(
               controller: _controller,
               autofocus: true,
-              onSubmitted: (_) => _handleTextChange(),
+              onSubmitted: (_) {
+                widget.onSubmit();
+                _controller.clear();
+              },
               decoration: InputDecoration(
                 hintText: '문장을 입력하세요',
                 hintStyle: AppTypography.b2_4.copyWith(
@@ -244,7 +235,8 @@ class _TypingInputState extends State<_TypingInput> {
           IconButton(
             icon: const Icon(Icons.send, color: AppColors.primaryBlue),
             onPressed: () {
-              _handleTextChange();
+              widget.onSubmit();
+              _controller.clear();
             },
           ),
         ],

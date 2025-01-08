@@ -26,17 +26,18 @@ class PracticeViewModel extends _$PracticeViewModel {
     ref.onDispose(() {
       _practiceTimer?.cancel();
     });
-    final allMessages = _getSentences()
-        .map((content) => TypingMessage(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              content: content,
-              characterStates: List.filled(content.length, CharacterState.waiting),
-            ))
-        .toList();
+
+    final fetchedSentences = _getSentences();
 
     return PracticeState(
-      allMessages: allMessages,
-      visibleMessages: [allMessages.first],
+      allMessages: fetchedSentences,
+      displayedMessages: [
+        TypingMessage(
+          content: fetchedSentences[0],
+          type: SentenceType.prompt,
+          status: SentenceStatus.current,
+        )
+      ],
     );
   }
 
@@ -58,51 +59,41 @@ class PracticeViewModel extends _$PracticeViewModel {
     _practiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {});
   }
 
-  void onTextInput(String input) {
-    if (state.isCompleted) return;
+  void handleSubmit() {
+    if (state.currentInput.trim().isEmpty) return;
 
-    final currentMessage = state.visibleMessages[state.currentMessageIndex];
-    final targetContent = currentMessage.content;
+    final currentIndex = state.allMessages.indexWhere(
+        (message) => message == state.displayedMessages.firstWhere((m) => m.status == SentenceStatus.current).content);
 
-    // 문자별 상태 업데이트 로직...
-    final List<CharacterState> newStates = _updateCharacterStates(
-      input,
-      targetContent,
-      currentMessage.characterStates,
-    );
-
-    // 현재 메시지 업데이트
-    final updatedMessage = currentMessage.copyWith(
-      userInput: input,
-      characterStates: newStates,
-    );
-
-    // 현재 표시된 메시지들 업데이트
-    final updatedVisibleMessages = List<TypingMessage>.from(state.visibleMessages);
-    updatedVisibleMessages[state.currentMessageIndex] = updatedMessage;
-
-    // 문장 완료 체크
-    if (input == targetContent) {
-      // 현재 메시지를 완료 상태로 변경
-      final completedMessage = updatedMessage.copyWith(isCompleted: true);
-      updatedVisibleMessages[state.currentMessageIndex] = completedMessage;
-
-      // 다음 메시지가 있으면 추가
-      final nextIndex = state.allMessages.indexOf(currentMessage) + 1;
-      if (nextIndex < state.allMessages.length) {
-        updatedVisibleMessages.add(state.allMessages[nextIndex]);
+    List<TypingMessage> updatedMessages = state.displayedMessages.map((message) {
+      if (message.status == SentenceStatus.current) {
+        return message.copyWith(status: SentenceStatus.completed);
       }
+      return message;
+    }).toList();
 
-      state = state.copyWith(
-        visibleMessages: updatedVisibleMessages,
-        currentMessageIndex: state.currentMessageIndex + 1,
-        isCompleted: nextIndex >= state.allMessages.length,
-      );
-    } else {
-      state = state.copyWith(
-        visibleMessages: updatedVisibleMessages,
-      );
+    updatedMessages.add(TypingMessage(
+      content: state.currentInput,
+      type: SentenceType.submitted,
+      status: SentenceStatus.completed,
+    ));
+
+    if (currentIndex < state.allMessages.length - 1) {
+      updatedMessages.add(TypingMessage(
+        content: state.allMessages[currentIndex + 1],
+        type: SentenceType.prompt,
+        status: SentenceStatus.current,
+      ));
     }
+
+    state = state.copyWith(
+      displayedMessages: updatedMessages,
+      currentInput: '',
+    );
+  }
+
+  void onTextInput(String value) {
+    state = state.copyWith(currentInput: value);
   }
 
   List<CharacterState> _updateCharacterStates(
