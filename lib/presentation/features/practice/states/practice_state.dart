@@ -12,5 +12,6 @@ class PracticeState with _$PracticeState {
     @Default(0) int currentMessageIndex, // 현재 입력해야 할 문장의 인덱스
     @Default('') String currentInput,
     @Default(PracticeMode.practice) PracticeMode practiceMode,
+    @Default(false) bool isComplete,
   }) = _PracticeState;
 }

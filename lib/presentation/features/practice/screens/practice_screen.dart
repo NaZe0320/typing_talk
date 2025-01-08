@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:typing_talk/core/base/base_screen.dart';
+import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/domain/entities/typing_message.dart';
@@ -29,6 +30,12 @@ class PracticeScreen extends BaseScreen {
   Widget buildContent(BuildContext context, WidgetRef ref) {
     final state = ref.watch(practiceViewModelProvider);
     final viewModel = ref.read(practiceViewModelProvider.notifier);
+
+    ref.listen(practiceViewModelProvider, (previous, next) {
+      if (next.isComplete) {
+        context.pushNamed(RouteNames.practiceResult);
+      }
+    });
 
     return Column(
       children: [

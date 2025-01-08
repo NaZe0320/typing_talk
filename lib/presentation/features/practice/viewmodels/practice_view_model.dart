@@ -84,10 +84,13 @@ class PracticeViewModel extends _$PracticeViewModel {
         type: SentenceType.prompt,
         status: SentenceStatus.current,
       ));
+    } else {
+      state = state.copyWith(isComplete: true); //완료 상태
     }
 
     state = state.copyWith(
       displayedMessages: updatedMessages,
+      currentMessageIndex: currentIndex + 1,
       currentInput: '',
     );
   }
