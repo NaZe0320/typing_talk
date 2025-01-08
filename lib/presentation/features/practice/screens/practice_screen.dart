@@ -58,79 +58,10 @@ class PracticeScreen extends BaseScreen {
           ),
         ),
         Expanded(
-          child: SizedBox(
-            width: double.infinity,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: state.displayedMessages.length,
-              itemBuilder: (context, index) {
-                final message = state.displayedMessages[index];
-                return _buildMessageBubble(
-                  message: message,
-                );
-              },
-            ),
-          ),
+          child: _MessageList(messages: state.displayedMessages),
         ),
         _TypingInput(onChanged: viewModel.onTextInput, onSubmit: viewModel.handleSubmit, targetContent: ""),
       ],
-    );
-  }
-
-  Widget _buildMessageBubble({
-    required TypingMessage message,
-  }) {
-    return Row(
-      mainAxisAlignment: message.type == SentenceType.prompt ? MainAxisAlignment.start : MainAxisAlignment.end,
-      children: [
-        Container(
-          constraints: const BoxConstraints(maxWidth: 320), //TODO (화면 비율 따라 작성)
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-          decoration: BoxDecoration(
-            color: message.type == SentenceType.prompt
-                ? message.status == SentenceStatus.current
-                    ? Colors.blue.shade50
-                    : Colors.grey.shade50
-                : Colors.green.shade50,
-            borderRadius: BorderRadius.circular(16),
-            border: message.status == SentenceStatus.current ? Border.all(color: Colors.blue.shade200) : null,
-          ),
-          child: Column(
-            children: [
-              message.type == SentenceType.prompt ? _buildTargetMessage(message) : _buildUserMessage(message),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTargetMessage(TypingMessage message) {
-    return RichText(
-      text: TextSpan(
-        children: List.generate(message.content.length, (index) {
-          final char = message.content[index];
-          return TextSpan(
-            text: char,
-            style: AppTypography.b2_4.copyWith(
-              color: AppColors.primaryText,
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildUserMessage(TypingMessage message) {
-    return Text(
-      message.content,
-      style: AppTypography.b2_4.copyWith(
-        color: AppColors.primaryText,
-      ),
     );
   }
 
@@ -247,6 +178,116 @@ class _TypingInputState extends State<_TypingInput> {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _MessageList extends StatefulWidget {
+  const _MessageList({
+    required this.messages,
+  });
+
+  final List<TypingMessage> messages;
+
+  @override
+  State<_MessageList> createState() => _MessageListState();
+}
+
+class _MessageListState extends State<_MessageList> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _MessageList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.messages.length != oldWidget.messages.length) {
+      // 메시지가 추가되면 자동으로 스크롤
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: widget.messages.length,
+      itemBuilder: (context, index) {
+        final message = widget.messages[index];
+        return _buildMessageBubble(
+          message: message,
+        );
+      },
+    );
+  }
+
+  Widget _buildMessageBubble({
+    required TypingMessage message,
+  }) {
+    return Row(
+      mainAxisAlignment: message.type == SentenceType.prompt ? MainAxisAlignment.start : MainAxisAlignment.end,
+      children: [
+        Container(
+          constraints: const BoxConstraints(maxWidth: 320), //TODO (화면 비율 따라 작성)
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+            color: message.type == SentenceType.prompt
+                ? message.status == SentenceStatus.current
+                    ? Colors.blue.shade50
+                    : Colors.grey.shade50
+                : Colors.green.shade50,
+            borderRadius: BorderRadius.circular(16),
+            border: message.status == SentenceStatus.current ? Border.all(color: Colors.blue.shade200) : null,
+          ),
+          child: Column(
+            children: [
+              message.type == SentenceType.prompt ? _buildTargetMessage(message) : _buildUserMessage(message),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTargetMessage(TypingMessage message) {
+    return RichText(
+      text: TextSpan(
+        children: List.generate(message.content.length, (index) {
+          final char = message.content[index];
+          return TextSpan(
+            text: char,
+            style: AppTypography.b2_4.copyWith(
+              color: AppColors.primaryText,
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildUserMessage(TypingMessage message) {
+    return Text(
+      message.content,
+      style: AppTypography.b2_4.copyWith(
+        color: AppColors.primaryText,
       ),
     );
   }
