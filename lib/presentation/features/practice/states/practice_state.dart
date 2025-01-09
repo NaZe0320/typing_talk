@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:typing_talk/domain/entities/typing_message.dart';
+import 'package:typing_talk/domain/enums/character_state.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 
 part 'practice_state.freezed.dart';
@@ -13,5 +14,6 @@ class PracticeState with _$PracticeState {
     @Default('') String currentInput,
     @Default(PracticeMode.practice) PracticeMode practiceMode,
     @Default(false) bool isComplete,
+    @Default([]) List<CharacterState> characterStates, // 추가
   }) = _PracticeState;
 }
