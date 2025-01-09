@@ -96,7 +96,19 @@ class PracticeViewModel extends _$PracticeViewModel {
   }
 
   void onTextInput(String value) {
-    state = state.copyWith(currentInput: value);
+    final targetMessage = state.allMessages[state.currentMessageIndex];
+    final updatedStates = _updateCharacterStates(
+      value,
+      targetMessage,
+      state.characterStates,
+    );
+
+    state = state.copyWith(
+      currentInput: value,
+      characterStates: updatedStates,
+    );
+
+    print("현재 글자: ${state.currentInput} / ${state.characterStates}");
   }
 
   List<CharacterState> _updateCharacterStates(
