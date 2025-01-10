@@ -8,7 +8,6 @@ import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
-import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
 import 'package:typing_talk/presentation/common/widgets/icon_widget.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_view_model.dart';
 import 'package:typing_talk/presentation/features/practice/widgets/message_list.dart';
@@ -21,6 +20,9 @@ class PracticeScreen extends BaseScreen {
   @override
   Widget? buildHeader(BuildContext context, WidgetRef ref) {
     final state = ref.watch(practiceViewModelProvider);
+
+    final Color modeColor = state.practiceMode == PracticeMode.practice ? AppColors.primaryBlue : AppColors.errorText;
+
     return Container(
       height: AppConstant.appBarHeight,
       padding: EdgeInsets.symmetric(horizontal: 8),
@@ -33,10 +35,10 @@ class PracticeScreen extends BaseScreen {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: modeColor.withAlpha(25),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColors.primaryBlue.withOpacity(0.2),
+                  color: modeColor.withAlpha(50),
                   width: 1,
                 ),
               ),
@@ -46,13 +48,15 @@ class PracticeScreen extends BaseScreen {
                   Icon(
                     Icons.timer_outlined,
                     size: 16,
-                    color: AppColors.primaryBlue,
+                    color: modeColor,
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${(state.elapsedSeconds / 60).toInt()}:${(state.elapsedSeconds % 60).toString().padLeft(2, '0')}',
+                    state.practiceMode == PracticeMode.practice
+                        ? '${(state.elapsedSeconds / 60).toInt()}:${(state.elapsedSeconds % 60).toString().padLeft(2, '0')}'
+                        : '${((300 - state.elapsedSeconds) / 60).toInt()}:${((300 - state.elapsedSeconds) % 60).toString().padLeft(2, '0')}',
                     style: AppTypography.b3_6.copyWith(
-                      color: AppColors.primaryBlue,
+                      color: modeColor,
                       letterSpacing: 0.5,
                     ),
                   ),

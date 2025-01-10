@@ -3,6 +3,7 @@ import 'package:typing_talk/data/repositories/practice_sentence_repository_impl.
 import 'dart:async';
 import 'package:typing_talk/domain/entities/typing_message.dart';
 import 'package:typing_talk/domain/enums/character_state.dart';
+import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/domain/repositories/practice_sentence_repository.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_state.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_setting_view_model.dart';
@@ -14,7 +15,7 @@ class PracticeViewModel extends _$PracticeViewModel {
   late final PracticeSentenceRepository _repository;
   Timer? _practiceTimer;
   DateTime? _startTime;
-  String _previousInput = '';
+  static const int testModeDuration = 300;
 
   PracticeViewModel() {
     _repository = PracticeSentenceRepositoryImpl();
@@ -22,6 +23,8 @@ class PracticeViewModel extends _$PracticeViewModel {
 
   @override
   PracticeState build() {
+    final settingState = ref.watch(practiceSettingViewModelProvider);
+
     ref.onDispose(() {
       _practiceTimer?.cancel();
     });
@@ -37,11 +40,13 @@ class PracticeViewModel extends _$PracticeViewModel {
           status: SentenceStatus.current,
         )
       ],
+      practiceMode: settingState.practiceMode, // Set practice mode from settings
     );
   }
 
   List<String> _getSentences() {
     final settingState = ref.watch(practiceSettingViewModelProvider);
+
     final allSentences =
         settingState.selectedTexts.expand((textId) => _repository.getSentencesByTextId(textId)).toList();
 
@@ -57,8 +62,24 @@ class PracticeViewModel extends _$PracticeViewModel {
     _practiceTimer?.cancel();
     _practiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_startTime != null) {
-        final elapsed = DateTime.now().difference(_startTime!).inSeconds;
-        state = state.copyWith(elapsedSeconds: elapsed);
+        if (state.practiceMode == PracticeMode.practice) {
+          // Practice 모드: 시간 증가
+          final elapsed = DateTime.now().difference(_startTime!).inSeconds;
+          state = state.copyWith(elapsedSeconds: elapsed);
+        } else {
+          // Test 모드: 시간 감소 효과를 위해 elapsedSeconds를 증가시키되,
+          // 남은 시간이 0이 되면 타이머 종료
+          final elapsed = DateTime.now().difference(_startTime!).inSeconds;
+          if (elapsed >= testModeDuration) {
+            timer.cancel();
+            state = state.copyWith(
+              elapsedSeconds: testModeDuration,
+              isComplete: true,
+            );
+          } else {
+            state = state.copyWith(elapsedSeconds: elapsed);
+          }
+        }
       }
     });
   }
