@@ -123,6 +123,7 @@ class PracticeViewModel extends _$PracticeViewModel {
       ));
     } else {
       state = state.copyWith(isComplete: true); //완료 상태
+      _practiceTimer?.cancel();
     }
 
     state = state.copyWith(
