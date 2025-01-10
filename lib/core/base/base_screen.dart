@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// BaseScreen은 앱의 기본 화면 구조를 정의하는 추상 클래스입니다.
@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 ///   }
 /// }
 /// ```
-abstract class BaseScreen extends ConsumerWidget {
+abstract class BaseScreen extends HookConsumerWidget {
   const BaseScreen({super.key});
 
   /// 화면의 주요 콘텐츠를 구현합니다.

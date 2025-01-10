@@ -14,6 +14,9 @@ class PracticeState with _$PracticeState {
     @Default('') String currentInput,
     @Default(PracticeMode.practice) PracticeMode practiceMode,
     @Default(false) bool isComplete,
-    @Default([]) List<CharacterState> characterStates, // 추가
+    @Default([]) List<CharacterState> characterStates,
+    @Default(0) int totalKeystrokes, // 총 타수
+    @Default(0) int correctKeystrokes, // 정확한 타수
+    @Default(0) int elapsedSeconds, // 경과 시간
   }) = _PracticeState;
 }

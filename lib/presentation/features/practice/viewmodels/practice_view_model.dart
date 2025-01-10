@@ -1,8 +1,6 @@
-// lib/presentation/features/practice/viewmodels/practice_view_model.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:typing_talk/data/repositories/practice_sentence_repository_impl.dart';
 import 'dart:async';
-
 import 'package:typing_talk/domain/entities/typing_message.dart';
 import 'package:typing_talk/domain/enums/character_state.dart';
 import 'package:typing_talk/domain/repositories/practice_sentence_repository.dart';
@@ -16,6 +14,7 @@ class PracticeViewModel extends _$PracticeViewModel {
   late final PracticeSentenceRepository _repository;
   Timer? _practiceTimer;
   DateTime? _startTime;
+  String _previousInput = '';
 
   PracticeViewModel() {
     _repository = PracticeSentenceRepositoryImpl();
@@ -56,7 +55,24 @@ class PracticeViewModel extends _$PracticeViewModel {
 
   void _startTimer() {
     _practiceTimer?.cancel();
-    _practiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {});
+    _practiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_startTime != null) {
+        final elapsed = DateTime.now().difference(_startTime!).inSeconds;
+        state = state.copyWith(elapsedSeconds: elapsed);
+      }
+    });
+  }
+
+  // 타수(분당) 계산 메서드 추가
+  double getTypingSpeed() {
+    if (state.elapsedSeconds == 0) return 0;
+    return (state.totalKeystrokes * 60) / state.elapsedSeconds;
+  }
+
+  // 정확도 계산 메서드 추가
+  double getAccuracy() {
+    if (state.totalKeystrokes == 0) return 0;
+    return (state.correctKeystrokes / state.totalKeystrokes) * 100;
   }
 
   void handleSubmit() {
@@ -107,8 +123,6 @@ class PracticeViewModel extends _$PracticeViewModel {
       currentInput: value,
       characterStates: updatedStates,
     );
-
-    print("현재 글자: ${state.currentInput} / ${state.characterStates}");
   }
 
   List<CharacterState> _updateCharacterStates(
