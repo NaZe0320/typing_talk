@@ -14,22 +14,24 @@ class StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: AppTypography.cap_4.copyWith(
-            color: AppColors.secondaryText,
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: AppTypography.cap_4.copyWith(
+              color: AppColors.secondaryText,
+            ),
           ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: AppTypography.b2_6.copyWith(
-            color: AppColors.primaryBlue,
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: AppTypography.b2_6.copyWith(
+              color: AppColors.primaryBlue,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

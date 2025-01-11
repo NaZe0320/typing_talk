@@ -114,7 +114,7 @@ class PracticeScreen extends BaseScreen {
               ),
               StatItem(
                 label: '타수',
-                value: '${viewModel.getTypingSpeed().toInt()}타',
+                value: '${viewModel.getTypingSpeed().toStringAsFixed(1)}타',
               ),
             ],
           ),
