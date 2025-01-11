@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:typing_talk/data/repositories/practice_sentence_repository_impl.dart';
 import 'dart:async';
@@ -81,19 +83,20 @@ class PracticeViewModel extends _$PracticeViewModel {
           }
         }
       }
+      getTypingSpeed(); //시간이 지날때, 타수 계산 메서드 실행
     });
   }
 
   // 타수(분당) 계산 메서드 추가
   double getTypingSpeed() {
     if (state.elapsedSeconds == 0) return 0;
-    return (state.totalKeystrokes * 60) / state.elapsedSeconds;
+    return ((state.totalKeystrokes + state.currentKeystrokes) * 60) / state.elapsedSeconds;
   }
 
   // 정확도 계산 메서드 추가
   double getAccuracy() {
-    if (state.totalKeystrokes == 0) return 0;
-    return (state.correctKeystrokes / state.totalKeystrokes) * 100;
+    if (state.totalKeystrokes + state.currentKeystrokes == 0) return 0;
+    return (state.correctKeystrokes / (state.totalKeystrokes + state.currentKeystrokes)) * 100;
   }
 
   void handleSubmit() {
@@ -126,11 +129,15 @@ class PracticeViewModel extends _$PracticeViewModel {
       _practiceTimer?.cancel();
     }
 
+    final totalKeystrokes = state.totalKeystrokes + state.currentKeystrokes;
     state = state.copyWith(
       displayedMessages: updatedMessages,
       currentMessageIndex: currentIndex + 1,
+      totalKeystrokes: totalKeystrokes,
+      currentKeystrokes: 0,
       currentInput: '',
     );
+    print("제출 후: ${state.totalKeystrokes} / ${state.currentKeystrokes}");
   }
 
   void onTextInput(String value) {
@@ -141,10 +148,16 @@ class PracticeViewModel extends _$PracticeViewModel {
       state.characterStates,
     );
 
+    final prevJamoCount = _countJamo(state.currentInput);
+    final currentJamoCount = _countJamo(value);
+
     state = state.copyWith(
       currentInput: value,
       characterStates: updatedStates,
+      currentKeystrokes: currentJamoCount,
     );
+
+    print("입력 후: ${state.totalKeystrokes} / ${state.currentKeystrokes}");
   }
 
   List<CharacterState> _updateCharacterStates(
@@ -169,6 +182,42 @@ class PracticeViewModel extends _$PracticeViewModel {
     }
 
     return newStates;
+  }
+
+  // 한글 문자열을 자모 단위로 분해
+  List<String> _decompose(String text) {
+    List<String> result = [];
+
+    for (int i = 0; i < text.length; i++) {
+      final char = text[i];
+      if (_isKorean(char)) {
+        final code = char.codeUnitAt(0) - 0xAC00;
+
+        // 초성, 중성, 종성 분리
+        final jong = code % 28;
+        final jung = ((code - jong) / 28 % 21).floor();
+        final cho = ((code - jong) / 28 / 21).floor();
+
+        // 초성 추가
+        result.add(String.fromCharCode(0x1100 + cho));
+        // 중성 추가
+        result.add(String.fromCharCode(0x1161 + jung));
+        // 종성이 있는 경우에만 추가
+        if (jong > 0) {
+          result.add(String.fromCharCode(0x11A7 + jong));
+        }
+      } else {
+        // 한글이 아닌 경우 그대로 추가
+        result.add(char);
+      }
+    }
+
+    return result;
+  }
+
+// 문자열의 총 자모 수를 계산
+  int _countJamo(String text) {
+    return _decompose(text).length;
   }
 
   bool _isKorean(String char) {
