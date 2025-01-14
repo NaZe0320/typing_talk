@@ -159,6 +159,8 @@ class PracticeViewModel extends _$PracticeViewModel {
     // 일치하는 자모 수 계산 (CharacterState 고려)
     final correctJamoCount = _countMatchingJamo(value, targetMessage, updatedStates);
 
+    print("테스트 : $currentJamoCount / $correctJamoCount");
+
     state = state.copyWith(
       currentInput: value,
       characterStates: updatedStates,
@@ -171,26 +173,12 @@ class PracticeViewModel extends _$PracticeViewModel {
   int _countMatchingJamo(String input, String target, List<CharacterState> states) {
     int matchCount = 0;
 
-    // 입력된 텍스트와 목표 텍스트를 자모로 분해
-    List<String> inputJamo = _decompose(input);
-    List<String> targetJamo = _decompose(target);
-
-    // 현재까지 처리된 자모 인덱스
-    int jamoIndex = 0;
-
     // 각 글자별로 상태 확인
     for (int i = 0; i < min(input.length, target.length); i++) {
-      // waiting이나 typing 상태는 건너뛰기
-      if (states[i] == CharacterState.waiting) {
-        // 현재 글자의 자모 수만큼 인덱스 증가
-        if (i < input.length) {
-          jamoIndex += _countJamo(input[i]);
-        }
-        continue;
-      }
-
       // correct 상태인 경우만 해당 글자의 자모 수를 카운트
-      if (states[i] == CharacterState.correct || states[i] == CharacterState.typing) {
+      if (states[i] == CharacterState.correct ||
+          states[i] == CharacterState.typing ||
+          states[i] == CharacterState.incorrect) {
         List<String> currentInputJamo = _decompose(input[i]);
         List<String> currentTargetJamo = _decompose(target[i]);
 
@@ -201,11 +189,6 @@ class PracticeViewModel extends _$PracticeViewModel {
             matchCount++;
           }
         }
-      }
-
-      // 다음 글자의 자모 인덱스로 이동
-      if (i < input.length) {
-        jamoIndex += _countJamo(input[i]);
       }
     }
     return matchCount;
