@@ -151,8 +151,6 @@ class PracticeViewModel extends _$PracticeViewModel {
 
     final currentJamoCount = _countJamo(value);
 
-    print("위치/값: $cursorPosition / $value");
-
     state = state.copyWith(
       currentInput: value,
       characterStates: updatedStates,
@@ -169,30 +167,55 @@ class PracticeViewModel extends _$PracticeViewModel {
     final List<CharacterState> newStates = List.filled(target.length, CharacterState.waiting);
 
     for (int i = 0; i < target.length; i++) {
-      // 아직 입력이 시작되지 않은 위치
       if (i >= input.length) {
         newStates[i] = CharacterState.waiting;
         continue;
       }
 
-      // 한글인 경우
       if (_isKorean(target[i])) {
-        // 현재 커서 위치와 일치하는 경우 (현재 입력 중)
-        if (i == cursorPosition - 1 && !_isCompletedSyllable(input[i])) {
-          newStates[i] = CharacterState.typing;
-        }
-        // 이미 입력이 완료된 위치
-        else {
+        // 현재 입력 중인 위치
+        if (i == cursorPosition - 1) {
+          // 목표 글자가 받침이 있는 경우
+          if (_hasJongseong(target[i])) {
+            // 현재 입력이 완성된 글자인 경우
+            if (_isCompletedSyllable(input[i])) {
+              if (input[i] == target[i]) {
+                // 완전히 일치하면 correct
+                newStates[i] = CharacterState.correct;
+              } else {
+                // 초성+중성만 일치하면 typing
+                newStates[i] = CharacterState.typing;
+              }
+            } else {
+              // 미완성 상태면 typing
+              newStates[i] = CharacterState.typing;
+            }
+          } else {
+            // 받침이 없는 글자는 기존 로직대로 처리
+            if (!_isCompletedSyllable(input[i])) {
+              newStates[i] = CharacterState.typing;
+            } else {
+              newStates[i] = input[i] == target[i] ? CharacterState.correct : CharacterState.incorrect;
+            }
+          }
+        } else {
+          // 입력이 완료된 위치
           newStates[i] = input[i] == target[i] ? CharacterState.correct : CharacterState.incorrect;
         }
-      }
-      // 한글이 아닌 경우
-      else {
+      } else {
         newStates[i] = input[i] == target[i] ? CharacterState.correct : CharacterState.incorrect;
       }
     }
 
     return newStates;
+  }
+
+  // 글자가 받침을 가지고 있는지 확인
+  bool _hasJongseong(String char) {
+    if (!_isKorean(char)) return false;
+    final code = char.codeUnitAt(0) - 0xAC00;
+    final jong = code % 28;
+    return jong > 0;
   }
 
   // 한글 문자열을 자모 단위로 분해
