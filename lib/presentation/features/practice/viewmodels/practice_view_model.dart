@@ -96,8 +96,8 @@ class PracticeViewModel extends _$PracticeViewModel {
   // 정확도 계산 메서드 추가
   double getAccuracy() {
     if (state.totalKeystrokes + state.currentKeystrokes == 0) return 0;
-    return (state.totalCorrectKeystrokes +
-            state.currentCorrectKeystrokes / (state.totalKeystrokes + state.currentKeystrokes)) *
+    return ((state.totalCorrectKeystrokes + state.currentCorrectKeystrokes) /
+            (state.totalKeystrokes + state.currentKeystrokes)) *
         100;
   }
 
@@ -158,8 +158,6 @@ class PracticeViewModel extends _$PracticeViewModel {
 
     // 일치하는 자모 수 계산 (CharacterState 고려)
     final correctJamoCount = _countMatchingJamo(value, targetMessage, updatedStates);
-
-    print("테스트 : $currentJamoCount / $correctJamoCount");
 
     state = state.copyWith(
       currentInput: value,
