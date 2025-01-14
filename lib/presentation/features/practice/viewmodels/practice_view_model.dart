@@ -96,7 +96,9 @@ class PracticeViewModel extends _$PracticeViewModel {
   // 정확도 계산 메서드 추가
   double getAccuracy() {
     if (state.totalKeystrokes + state.currentKeystrokes == 0) return 0;
-    return (state.correctKeystrokes / (state.totalKeystrokes + state.currentKeystrokes)) * 100;
+    return (state.totalCorrectKeystrokes +
+            state.currentCorrectKeystrokes / (state.totalKeystrokes + state.currentKeystrokes)) *
+        100;
   }
 
   void handleSubmit() {
@@ -130,12 +132,15 @@ class PracticeViewModel extends _$PracticeViewModel {
     }
 
     final totalKeystrokes = state.totalKeystrokes + state.currentKeystrokes;
+    final totalCorrectKeystrokes = state.totalCorrectKeystrokes + state.currentCorrectKeystrokes;
 
     state = state.copyWith(
       displayedMessages: updatedMessages,
       currentMessageIndex: currentIndex + 1,
       totalKeystrokes: totalKeystrokes,
+      totalCorrectKeystrokes: totalCorrectKeystrokes,
       currentKeystrokes: 0,
+      currentCorrectKeystrokes: 0,
       currentInput: '',
     );
   }
@@ -151,11 +156,59 @@ class PracticeViewModel extends _$PracticeViewModel {
 
     final currentJamoCount = _countJamo(value);
 
+    // 일치하는 자모 수 계산 (CharacterState 고려)
+    final correctJamoCount = _countMatchingJamo(value, targetMessage, updatedStates);
+
     state = state.copyWith(
       currentInput: value,
       characterStates: updatedStates,
       currentKeystrokes: currentJamoCount,
+      currentCorrectKeystrokes: correctJamoCount,
     );
+  }
+
+  // 두 문자열 간의 일치하는 자모 수를 계산
+  int _countMatchingJamo(String input, String target, List<CharacterState> states) {
+    int matchCount = 0;
+
+    // 입력된 텍스트와 목표 텍스트를 자모로 분해
+    List<String> inputJamo = _decompose(input);
+    List<String> targetJamo = _decompose(target);
+
+    // 현재까지 처리된 자모 인덱스
+    int jamoIndex = 0;
+
+    // 각 글자별로 상태 확인
+    for (int i = 0; i < min(input.length, target.length); i++) {
+      // waiting이나 typing 상태는 건너뛰기
+      if (states[i] == CharacterState.waiting) {
+        // 현재 글자의 자모 수만큼 인덱스 증가
+        if (i < input.length) {
+          jamoIndex += _countJamo(input[i]);
+        }
+        continue;
+      }
+
+      // correct 상태인 경우만 해당 글자의 자모 수를 카운트
+      if (states[i] == CharacterState.correct || states[i] == CharacterState.typing) {
+        List<String> currentInputJamo = _decompose(input[i]);
+        List<String> currentTargetJamo = _decompose(target[i]);
+
+        // 분해된 자모들을 비교하여 일치하는 개수 세기
+        int minJamoLength = min(currentInputJamo.length, currentTargetJamo.length);
+        for (int j = 0; j < minJamoLength; j++) {
+          if (currentInputJamo[j] == currentTargetJamo[j]) {
+            matchCount++;
+          }
+        }
+      }
+
+      // 다음 글자의 자모 인덱스로 이동
+      if (i < input.length) {
+        jamoIndex += _countJamo(input[i]);
+      }
+    }
+    return matchCount;
   }
 
   List<CharacterState> _updateCharacterStates(
