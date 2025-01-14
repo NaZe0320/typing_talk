@@ -140,15 +140,18 @@ class PracticeViewModel extends _$PracticeViewModel {
     );
   }
 
-  void onTextInput(String value) {
+  void onTextInput(String value, int cursorPosition) {
     final targetMessage = state.allMessages[state.currentMessageIndex];
     final updatedStates = _updateCharacterStates(
       value,
       targetMessage,
       state.characterStates,
+      cursorPosition, // 커서 위치 전달
     );
 
     final currentJamoCount = _countJamo(value);
+
+    print("위치/값: $cursorPosition / $value");
 
     state = state.copyWith(
       currentInput: value,
@@ -161,19 +164,30 @@ class PracticeViewModel extends _$PracticeViewModel {
     String input,
     String target,
     List<CharacterState> currentStates,
+    int cursorPosition,
   ) {
     final List<CharacterState> newStates = List.filled(target.length, CharacterState.waiting);
 
-    for (int i = 0; i < input.length && i < target.length; i++) {
+    for (int i = 0; i < target.length; i++) {
+      // 아직 입력이 시작되지 않은 위치
+      if (i >= input.length) {
+        newStates[i] = CharacterState.waiting;
+        continue;
+      }
+
+      // 한글인 경우
       if (_isKorean(target[i])) {
-        if (i >= input.length) {
-          newStates[i] = CharacterState.waiting;
-        } else if (_isCompletedSyllable(input[i])) {
-          newStates[i] = input[i] == target[i] ? CharacterState.correct : CharacterState.incorrect;
-        } else {
+        // 현재 커서 위치와 일치하는 경우 (현재 입력 중)
+        if (i == cursorPosition - 1 && !_isCompletedSyllable(input[i])) {
           newStates[i] = CharacterState.typing;
         }
-      } else {
+        // 이미 입력이 완료된 위치
+        else {
+          newStates[i] = input[i] == target[i] ? CharacterState.correct : CharacterState.incorrect;
+        }
+      }
+      // 한글이 아닌 경우
+      else {
         newStates[i] = input[i] == target[i] ? CharacterState.correct : CharacterState.incorrect;
       }
     }

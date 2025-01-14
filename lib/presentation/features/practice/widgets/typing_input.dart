@@ -10,7 +10,7 @@ class TypingInput extends StatefulWidget {
     required this.onSubmit,
   });
 
-  final ValueChanged<String> onChanged;
+  final void Function(String text, int cursorPosition) onChanged;
   final VoidCallback onSubmit;
   final String targetContent;
 
@@ -36,7 +36,10 @@ class _TypingInputState extends State<TypingInput> {
   }
 
   void _handleTextChange() {
-    widget.onChanged(_controller.text);
+    widget.onChanged(
+      _controller.text,
+      _controller.selection.baseOffset,
+    );
   }
 
   @override
