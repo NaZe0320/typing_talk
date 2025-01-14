@@ -271,7 +271,7 @@ class PracticeViewModel extends _$PracticeViewModel {
     return jong > 0;
   }
 
-  // 한글 문자열을 자모 단위로 분해
+  // 문자열의 총 자모 수를 계산
   List<String> _decompose(String text) {
     List<String> result = [];
 
@@ -293,8 +293,10 @@ class PracticeViewModel extends _$PracticeViewModel {
         if (jong > 0) {
           result.add(String.fromCharCode(0x11A7 + jong));
         }
+      } else if (_isCompatibilityJamo(char)) {
+        // 호환용 자모를 조합형 자모로 변환
+        result.add(_convertToConjoiningJamo(char));
       } else {
-        // 한글이 아닌 경우 그대로 추가
         result.add(char);
       }
     }
@@ -302,7 +304,13 @@ class PracticeViewModel extends _$PracticeViewModel {
     return result;
   }
 
-// 문자열의 총 자모 수를 계산
+  // 호환용 자모인지 확인
+  bool _isCompatibilityJamo(String char) {
+    final code = char.codeUnitAt(0);
+    return (code >= 0x3131 && code <= 0x318E); // 호환용 자모 범위
+  }
+
+  // 문자열의 총 자모 수를 계산
   int _countJamo(String text) {
     return _decompose(text).length;
   }
@@ -315,5 +323,54 @@ class PracticeViewModel extends _$PracticeViewModel {
   bool _isCompletedSyllable(String char) {
     final code = char.codeUnitAt(0);
     return code >= 0xAC00 && code <= 0xD7A3; // 완성형 한글인 경우만 true
+  }
+
+  // 한글 자모 변환을 위한 매핑
+  final Map<String, String> _compatibilityToConjoiningJamo = {
+    'ㄱ': 'ᄀ',
+    'ㄲ': 'ᄁ',
+    'ㄴ': 'ᄂ',
+    'ㄷ': 'ᄃ',
+    'ㄸ': 'ᄄ',
+    'ㄹ': 'ᄅ',
+    'ㅁ': 'ᄆ',
+    'ㅂ': 'ᄇ',
+    'ㅃ': 'ᄈ',
+    'ㅅ': 'ᄉ',
+    'ㅆ': 'ᄊ',
+    'ㅇ': 'ᄋ',
+    'ㅈ': 'ᄌ',
+    'ㅉ': 'ᄍ',
+    'ㅊ': 'ᄎ',
+    'ㅋ': 'ᄏ',
+    'ㅌ': 'ᄐ',
+    'ㅍ': 'ᄑ',
+    'ㅎ': 'ᄒ',
+    'ㅏ': 'ᅡ',
+    'ㅐ': 'ᅢ',
+    'ㅑ': 'ᅣ',
+    'ㅒ': 'ᅤ',
+    'ㅓ': 'ᅥ',
+    'ㅔ': 'ᅦ',
+    'ㅕ': 'ᅧ',
+    'ㅖ': 'ᅨ',
+    'ㅗ': 'ᅩ',
+    'ㅘ': 'ᅪ',
+    'ㅙ': 'ᅫ',
+    'ㅚ': 'ᅬ',
+    'ㅛ': 'ᅭ',
+    'ㅜ': 'ᅮ',
+    'ㅝ': 'ᅯ',
+    'ㅞ': 'ᅰ',
+    'ㅟ': 'ᅱ',
+    'ㅠ': 'ᅲ',
+    'ㅡ': 'ᅳ',
+    'ㅢ': 'ᅴ',
+    'ㅣ': 'ᅵ'
+  };
+
+// 한글 호환 자모를 조합형 자모로 변환
+  String _convertToConjoiningJamo(String char) {
+    return _compatibilityToConjoiningJamo[char] ?? char;
   }
 }
