@@ -8,17 +8,18 @@ part 'practice_state.freezed.dart';
 @freezed
 class PracticeState with _$PracticeState {
   const factory PracticeState({
-    @Default([]) List<String> allMessages, // 전체 문장 목록
-    @Default([]) List<TypingMessage> displayedMessages, // 화면에 표시된 문장들
-    @Default(0) int currentMessageIndex, // 현재 입력해야 할 문장의 인덱스
+    @Default([]) List<String> allMessages,
+    @Default([]) List<TypingMessage> displayedMessages,
+    @Default(0) int currentMessageIndex,
     @Default('') String currentInput,
     @Default(PracticeMode.practice) PracticeMode practiceMode,
     @Default(false) bool isComplete,
     @Default([]) List<CharacterState> characterStates,
-    @Default(0) int totalKeystrokes, // 총 타수
-    @Default(0) int currentKeystrokes, //현재 문장 타수
-    @Default(0) int totalCorrectKeystrokes, // 총 정확한 타수
-    @Default(0) int currentCorrectKeystrokes, //현재 정확한 타수
-    @Default(0) int elapsedSeconds, // 경과 시간
+    @Default(0) int totalKeystrokes, // 정확도 계산용 전체 타수 (미입력 포함)
+    @Default(0) int currentKeystrokes,
+    @Default(0) int totalCorrectKeystrokes,
+    @Default(0) int currentCorrectKeystrokes,
+    @Default(0) int elapsedSeconds,
+    @Default(0) int actualTotalKeystrokes, // 속도 계산용 실제 입력 타수
   }) = _PracticeState;
 }

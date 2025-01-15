@@ -87,25 +87,36 @@ class PracticeViewModel extends _$PracticeViewModel {
     });
   }
 
-  // 타수(분당) 계산 메서드 추가
+// 타수(분당) 계산 메서드 수정
   double getTypingSpeed() {
     if (state.elapsedSeconds == 0) return 0;
-    return ((state.totalKeystrokes + state.currentKeystrokes) * 60) / state.elapsedSeconds;
+    // 실제 입력한 타수만으로 속도 계산
+    return ((state.actualTotalKeystrokes + state.currentKeystrokes) * 60) / state.elapsedSeconds;
   }
 
-  // 정확도 계산 메서드 추가
+// 정확도 계산 메서드 수정
   double getAccuracy() {
-    if (state.totalKeystrokes + state.currentKeystrokes == 0) return 0;
-    return ((state.totalCorrectKeystrokes + state.currentCorrectKeystrokes) /
-            (state.totalKeystrokes + state.currentKeystrokes)) *
-        100;
+    final totalStrokes = state.totalKeystrokes + state.currentKeystrokes;
+    if (totalStrokes == 0) return 0;
+
+    return ((state.totalCorrectKeystrokes + state.currentCorrectKeystrokes) / totalStrokes) * 100;
   }
 
   void handleSubmit() {
     if (state.currentInput.trim().isEmpty) return;
 
-    final currentIndex = state.allMessages.indexWhere(
-        (message) => message == state.displayedMessages.firstWhere((m) => m.status == SentenceStatus.current).content);
+    final currentMessage = state.displayedMessages.firstWhere((m) => m.status == SentenceStatus.current);
+    final targetLength = currentMessage.content.length;
+    final inputLength = state.currentInput.length;
+
+    // 미입력된 부분의 자모 수를 계산
+    int remainingJamoCount = 0;
+    if (inputLength < targetLength) {
+      final remainingText = currentMessage.content.substring(inputLength);
+      remainingJamoCount = _countJamo(remainingText);
+    }
+
+    final currentIndex = state.allMessages.indexOf(currentMessage.content);
 
     List<TypingMessage> updatedMessages = state.displayedMessages.map((message) {
       if (message.status == SentenceStatus.current) {
@@ -127,17 +138,22 @@ class PracticeViewModel extends _$PracticeViewModel {
         status: SentenceStatus.current,
       ));
     } else {
-      state = state.copyWith(isComplete: true); //완료 상태
+      state = state.copyWith(isComplete: true);
       _practiceTimer?.cancel();
     }
 
-    final totalKeystrokes = state.totalKeystrokes + state.currentKeystrokes;
+    // 정확도 계산용 전체 타수 (미입력 포함)
+    final totalKeystrokes = state.totalKeystrokes + state.currentKeystrokes + remainingJamoCount;
+    // 속도 계산용 실제 입력 타수
+    final actualTotalKeystrokes = state.actualTotalKeystrokes + state.currentKeystrokes;
+
     final totalCorrectKeystrokes = state.totalCorrectKeystrokes + state.currentCorrectKeystrokes;
 
     state = state.copyWith(
       displayedMessages: updatedMessages,
       currentMessageIndex: currentIndex + 1,
       totalKeystrokes: totalKeystrokes,
+      actualTotalKeystrokes: actualTotalKeystrokes,
       totalCorrectKeystrokes: totalCorrectKeystrokes,
       currentKeystrokes: 0,
       currentCorrectKeystrokes: 0,
@@ -147,6 +163,12 @@ class PracticeViewModel extends _$PracticeViewModel {
 
   void onTextInput(String value, int cursorPosition) {
     final targetMessage = state.allMessages[state.currentMessageIndex];
+
+    // 입력 문장이 제시 문장보다 긴 경우, 제시 문장 길이만큼만 처리
+    if (value.length > targetMessage.length) {
+      value = value.substring(0, targetMessage.length);
+    }
+
     final updatedStates = _updateCharacterStates(
       value,
       targetMessage,
