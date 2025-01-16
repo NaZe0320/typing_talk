@@ -7,6 +7,7 @@ import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/core/utils/app_logger.dart';
 import 'package:typing_talk/presentation/common/widgets/buttons/navigation_button.dart';
+import 'package:typing_talk/presentation/features/home/widgets/app_exit_dialog.dart';
 import 'package:typing_talk/presentation/features/home/widgets/home_app_bar.dart';
 
 import 'dart:io';
@@ -65,23 +66,11 @@ class HomeScreen extends BaseScreen {
   }
 
   @override
-  Future<(bool, String?)> onWillPop(BuildContext context) async {
+  Future<(bool, String?)> onWillPop(BuildContext context, WidgetRef ref) async {
     final shouldExit = await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('앱 종료'),
-            content: const Text('정말 앱을 종료하시겠습니까?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('취소'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('종료'),
-              ),
-            ],
-          ),
+          barrierDismissible: false,
+          builder: (context) => const AppExitDialog(),
         ) ??
         false;
 

@@ -10,6 +10,7 @@ import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/common/widgets/icon_widget.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_view_model.dart';
+import 'package:typing_talk/presentation/features/practice/widgets/exit_practice_dialog.dart';
 import 'package:typing_talk/presentation/features/practice/widgets/message_list.dart';
 import 'package:typing_talk/presentation/features/practice/widgets/stat_item.dart';
 import 'package:typing_talk/presentation/features/practice/widgets/typing_input.dart';
@@ -30,7 +31,7 @@ class PracticeScreen extends BaseScreen {
         Row(
           spacing: 8,
           children: [
-            IconWidget(assetName: 'arrow_left', size: 24, onTap: () => context.go('/')),
+            IconWidget(assetName: 'arrow_left', size: 24, onTap: () => showExitPracticeDialog(context, ref)),
             Text(state.practiceMode == PracticeMode.practice ? '타자연습' : '타자검정', style: AppTypography.h3_6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -69,9 +70,31 @@ class PracticeScreen extends BaseScreen {
     );
   }
 
+  void showExitPracticeDialog(BuildContext context, WidgetRef ref) {
+    final state = ref.read(practiceViewModelProvider);
+    final viewModel = ref.read(practiceViewModelProvider.notifier);
+
+    viewModel.pausePractice();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 백그라운드 탭으로 닫히지 않도록 설정
+      builder: (context) => ExitPracticeDialog(
+        practiceTime: Duration(seconds: state.elapsedSeconds),
+        onExit: () {
+          viewModel.completePractice();
+          context.go('/'); // 홈으로 이동
+        },
+        onContinue: () {
+          viewModel.resumePractice();
+        },
+      ),
+    );
+  }
+
   @override
-  Future<(bool, String?)> onWillPop(BuildContext context) async {
-    context.go('/');
+  Future<(bool, String?)> onWillPop(BuildContext context, WidgetRef ref) async {
+    showExitPracticeDialog(context, ref);
     return (false, null);
   }
 

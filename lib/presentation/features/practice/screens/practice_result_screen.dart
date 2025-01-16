@@ -156,7 +156,7 @@ class PracticeResultScreen extends BaseScreen {
   }
 
   @override
-  Future<(bool, String?)> onWillPop(BuildContext context) async {
+  Future<(bool, String?)> onWillPop(BuildContext context, WidgetRef ref) async {
     context.go('/');
     return (false, null);
   }

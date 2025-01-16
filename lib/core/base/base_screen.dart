@@ -46,7 +46,7 @@ abstract class BaseScreen extends HookConsumerWidget {
   ///
   /// 기본 구현은 (true, null)을 반환하여 결과값 없이 즉시 화면을 종료합니다.
 
-  Future<(bool, dynamic)> onWillPop(BuildContext context) async => (true, null);
+  Future<(bool, dynamic)> onWillPop(BuildContext context, WidgetRef ref) async => (true, null);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,7 +65,7 @@ abstract class BaseScreen extends HookConsumerWidget {
       ),
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         if (!didPop) {
-          final (shouldPop, popResult) = await onWillPop(context);
+          final (shouldPop, popResult) = await onWillPop(context, ref);
           if (shouldPop && context.mounted) {
             context.pop(popResult);
           }

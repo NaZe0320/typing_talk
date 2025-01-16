@@ -87,6 +87,19 @@ class PracticeViewModel extends _$PracticeViewModel {
     });
   }
 
+  void pausePractice() {
+    _practiceTimer?.cancel();
+  }
+
+  void resumePractice() {
+    startPractice();
+  }
+
+  void completePractice() {
+    _practiceTimer?.cancel();
+    state = state.copyWith(isComplete: true);
+  }
+
 // 타수(분당) 계산 메서드 수정
   double getTypingSpeed() {
     if (state.elapsedSeconds == 0) return 0;
