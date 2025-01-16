@@ -17,6 +17,8 @@ class PracticeViewModel extends _$PracticeViewModel {
   late final PracticeSentenceRepository _repository;
   Timer? _practiceTimer;
   DateTime? _startTime;
+  DateTime? _pauseTime;
+  int _accumulatedSeconds = 0;
   static const int testModeDuration = 300;
 
   PracticeViewModel() {
@@ -64,22 +66,22 @@ class PracticeViewModel extends _$PracticeViewModel {
     _practiceTimer?.cancel();
     _practiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_startTime != null) {
+        final currentElapsed = _accumulatedSeconds + DateTime.now().difference(_startTime!).inSeconds;
+
         if (state.practiceMode == PracticeMode.practice) {
           // Practice 모드: 시간 증가
-          final elapsed = DateTime.now().difference(_startTime!).inSeconds;
-          state = state.copyWith(elapsedSeconds: elapsed);
+          state = state.copyWith(elapsedSeconds: currentElapsed);
         } else {
           // Test 모드: 시간 감소 효과를 위해 elapsedSeconds를 증가시키되,
           // 남은 시간이 0이 되면 타이머 종료
-          final elapsed = DateTime.now().difference(_startTime!).inSeconds;
-          if (elapsed >= testModeDuration) {
+          if (currentElapsed >= testModeDuration) {
             timer.cancel();
             state = state.copyWith(
               elapsedSeconds: testModeDuration,
               isComplete: true,
             );
           } else {
-            state = state.copyWith(elapsedSeconds: elapsed);
+            state = state.copyWith(elapsedSeconds: currentElapsed);
           }
         }
       }
@@ -89,10 +91,15 @@ class PracticeViewModel extends _$PracticeViewModel {
 
   void pausePractice() {
     _practiceTimer?.cancel();
+    if (_startTime != null) {
+      _pauseTime = DateTime.now();
+      _accumulatedSeconds += _pauseTime!.difference(_startTime!).inSeconds;
+    }
   }
 
   void resumePractice() {
-    startPractice();
+    _startTime = DateTime.now();
+    _startTimer();
   }
 
   void completePractice() {
