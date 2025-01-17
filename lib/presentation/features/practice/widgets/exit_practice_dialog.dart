@@ -72,7 +72,7 @@ class ExitPracticeDialog extends ConsumerWidget {
       ],
       actions: [
         AppButton(
-          onPressed: () {
+          onPressed: () async {
             Navigator.of(context).pop();
             viewModel.completePractice(); // 연습 완료 처리
             context.pushNamed(RouteNames.practiceResult); // 결과 화면으로 이동

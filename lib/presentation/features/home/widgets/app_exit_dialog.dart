@@ -31,8 +31,8 @@ class AppExitDialog extends ConsumerWidget {
       message: '앱을 종료하시겠습니까?',
       actions: [
         AppButton(
-          onPressed: () {
-            SystemNavigator.pop(); // 앱 종료
+          onPressed: () async {
+            SystemNavigator.pop();
           },
           text: '종료',
         ),

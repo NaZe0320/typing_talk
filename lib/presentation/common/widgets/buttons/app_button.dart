@@ -16,13 +16,12 @@ enum AppButtonSize {
   large,
 }
 
-class AppButton extends StatelessWidget {
+class AppButton extends StatefulWidget {
   final String text;
-  final VoidCallback? onPressed;
+  final Future<void> Function()? onPressed;
   final AppButtonType type;
   final AppButtonSize size;
   final bool isFullWidth;
-  final bool isLoading;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
 
@@ -33,18 +32,38 @@ class AppButton extends StatelessWidget {
     this.type = AppButtonType.primary,
     this.size = AppButtonSize.medium,
     this.isFullWidth = true,
-    this.isLoading = false,
     this.prefixIcon,
     this.suffixIcon,
   });
 
   @override
+  State<AppButton> createState() => _AppButtonState();
+}
+
+class _AppButtonState extends State<AppButton> {
+  bool _isLoading = false;
+
+  Future<void> _handlePress() async {
+    if (_isLoading || widget.onPressed == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await widget.onPressed!();
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: isFullWidth ? double.infinity : null,
+      width: widget.isFullWidth ? double.infinity : null,
       height: _getHeight(),
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: widget.onPressed == null ? null : _handlePress,
         style: _getButtonStyle(),
         child: _buildButtonContent(),
       ),
@@ -52,41 +71,41 @@ class AppButton extends StatelessWidget {
   }
 
   Widget _buildButtonContent() {
-    if (isLoading) {
+    if (_isLoading) {
       return SizedBox(
         height: 20,
         width: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            type == AppButtonType.secondary ? AppColors.primaryBlue : Colors.white,
+            widget.type == AppButtonType.secondary ? AppColors.primaryBlue : Colors.white,
           ),
         ),
       );
     }
 
     return Row(
-      mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisSize: widget.isFullWidth ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (prefixIcon != null) ...[
-          prefixIcon!,
+        if (widget.prefixIcon != null) ...[
+          widget.prefixIcon!,
           const SizedBox(width: 8),
         ],
         Text(
-          text,
+          widget.text,
           style: _getTextStyle(),
         ),
-        if (suffixIcon != null) ...[
+        if (widget.suffixIcon != null) ...[
           const SizedBox(width: 8),
-          suffixIcon!,
+          widget.suffixIcon!,
         ],
       ],
     );
   }
 
   double _getHeight() {
-    switch (size) {
+    switch (widget.size) {
       case AppButtonSize.small:
         return 36;
       case AppButtonSize.medium:
@@ -103,10 +122,10 @@ class AppButton extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: type == AppButtonType.secondary ? BorderSide(color: AppColors.primaryBlue) : BorderSide.none,
+        side: widget.type == AppButtonType.secondary ? BorderSide(color: AppColors.primaryBlue) : BorderSide.none,
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: size == AppButtonSize.small ? 16 : 24,
+        horizontal: widget.size == AppButtonSize.small ? 16 : 24,
       ),
     ).copyWith(
       overlayColor: WidgetStateProperty.resolveWith<Color?>(
@@ -121,7 +140,7 @@ class AppButton extends StatelessWidget {
   }
 
   TextStyle _getTextStyle() {
-    final baseStyle = size == AppButtonSize.small ? AppTypography.btn_5 : AppTypography.btn_6;
+    final baseStyle = widget.size == AppButtonSize.small ? AppTypography.btn_5 : AppTypography.btn_6;
 
     return baseStyle.copyWith(
       color: _getForegroundColor(),
@@ -129,7 +148,7 @@ class AppButton extends StatelessWidget {
   }
 
   Color _getBackgroundColor() {
-    switch (type) {
+    switch (widget.type) {
       case AppButtonType.primary:
         return AppColors.primaryBlue;
       case AppButtonType.secondary:
@@ -144,7 +163,7 @@ class AppButton extends StatelessWidget {
   }
 
   Color _getForegroundColor() {
-    switch (type) {
+    switch (widget.type) {
       case AppButtonType.secondary:
         return AppColors.primaryBlue;
       default:
@@ -153,7 +172,7 @@ class AppButton extends StatelessWidget {
   }
 
   Color _getPressedColor() {
-    switch (type) {
+    switch (widget.type) {
       case AppButtonType.primary:
         return AppColors.tertiaryBlue;
       case AppButtonType.secondary:
