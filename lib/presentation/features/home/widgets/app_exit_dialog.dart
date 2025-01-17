@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:typing_talk/core/base/base_dialog.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
+import 'package:typing_talk/presentation/common/widgets/buttons/app_button.dart';
+import 'package:typing_talk/presentation/common/widgets/buttons/app_text_button.dart';
 
 class AppExitDialog extends ConsumerWidget {
   const AppExitDialog({
@@ -28,37 +30,16 @@ class AppExitDialog extends ConsumerWidget {
       title: 'TypingTalk 종료',
       message: '앱을 종료하시겠습니까?',
       actions: [
-        ElevatedButton(
+        AppButton(
           onPressed: () {
             SystemNavigator.pop(); // 앱 종료
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.errorText,
-            minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: Text(
-            '종료',
-            style: AppTypography.btn_6.copyWith(color: Colors.white),
-          ),
+          text: '종료',
         ),
         const SizedBox(height: 8),
-        TextButton(
+        AppTextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          style: TextButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: Text(
-            '취소',
-            style: AppTypography.btn_6.copyWith(
-              color: AppColors.secondaryText,
-            ),
-          ),
+          text: '취소',
         ),
       ],
     );

@@ -57,11 +57,11 @@ class PracticeResultScreen extends BaseScreen {
             '${state.accuracy.toStringAsFixed(1)}점',
             style: AppTypography.h1_7.copyWith(color: AppColors.white),
           ),
-          const SizedBox(height: 8),
-          Text(
-            '상위 15%의 성과입니다!',
-            style: AppTypography.b3_4.copyWith(color: AppColors.white.withOpacity(0.8)),
-          ),
+          // const SizedBox(height: 8),
+          // Text(
+          //   '상위 15%의 성과입니다!',
+          //   style: AppTypography.b3_4.copyWith(color: AppColors.white.withOpacity(0.8)),
+          // ),
           const SizedBox(height: 24),
           Row(
             spacing: 16,

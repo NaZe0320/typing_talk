@@ -5,6 +5,8 @@ import 'package:typing_talk/core/base/base_dialog.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
+import 'package:typing_talk/presentation/common/widgets/buttons/app_button.dart';
+import 'package:typing_talk/presentation/common/widgets/buttons/app_text_button.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_view_model.dart';
 
 class ExitPracticeDialog extends ConsumerWidget {
@@ -69,42 +71,21 @@ class ExitPracticeDialog extends ConsumerWidget {
         ),
       ],
       actions: [
-        ElevatedButton(
+        AppButton(
           onPressed: () {
             Navigator.of(context).pop();
             viewModel.completePractice(); // 연습 완료 처리
             context.pushNamed(RouteNames.practiceResult); // 결과 화면으로 이동
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryBlue,
-            minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          child: Text(
-            '종료하고 결과 보기',
-            style: AppTypography.btn_6.copyWith(color: Colors.white),
-          ),
+          text: '종료하고 결과 보기',
         ),
         const SizedBox(height: 8),
-        TextButton(
+        AppTextButton(
           onPressed: () {
             Navigator.of(context).pop();
             onContinue();
           },
-          style: TextButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          child: Text(
-            '계속 연습하기',
-            style: AppTypography.btn_6.copyWith(
-              color: AppColors.secondaryText,
-            ),
-          ),
+          text: '계속 연습하기',
         ),
       ],
     );

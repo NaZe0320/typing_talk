@@ -7,6 +7,7 @@ import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/domain/entities/text_item.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
+import 'package:typing_talk/presentation/common/widgets/buttons/app_button.dart';
 import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_setting_view_model.dart';
 
@@ -138,21 +139,10 @@ class PracticeSettingScreen extends BaseScreen {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            child: ElevatedButton(
+            child: AppButton(
+              text: '시작하기',
+              type: AppButtonType.primary,
               onPressed: state.isStartButtonEnabled ? () => context.pushNamed(RouteNames.practice) : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: state.isStartButtonEnabled ? AppColors.primaryBlue : AppColors.gray300,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                '시작하기',
-                style: AppTypography.btn_6.copyWith(
-                  color: state.isStartButtonEnabled ? AppColors.white : AppColors.gray500,
-                ),
-              ),
             ),
           ),
         ],
