@@ -5,7 +5,6 @@ import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/core/theme/app_gradients.dart';
-import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_result_state.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_result_view_model.dart';

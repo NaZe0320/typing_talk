@@ -182,6 +182,9 @@ class PracticeViewModel extends _$PracticeViewModel {
   }
 
   void onTextInput(String value, int cursorPosition) {
+    if (state.currentMessageIndex >= state.allMessages.length) {
+      return;
+    }
     final targetMessage = state.allMessages[state.currentMessageIndex];
 
     // 입력 문장이 제시 문장보다 긴 경우, 제시 문장 길이만큼만 처리
