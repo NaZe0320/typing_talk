@@ -105,7 +105,9 @@ class PracticeScreen extends BaseScreen {
     final viewModel = ref.read(practiceViewModelProvider.notifier);
 
     useEffect(() {
-      viewModel.startPractice();
+      viewModel.initializeState().then((_) {
+        viewModel.startPractice();
+      });
       return null;
     }, []);
 
@@ -113,17 +115,20 @@ class PracticeScreen extends BaseScreen {
       switch (state) {
         case AppLifecycleState.resumed:
           print('앱이 포그라운드로 돌아옴');
+          viewModel.startPractice();
           // 예: 데이터 새로고침
           break;
         case AppLifecycleState.inactive:
-          print('앱이 비활성화됨');
+          viewModel.pausePractice();
+          //print('앱이 비활성화됨');
           break;
         case AppLifecycleState.paused:
-          print('앱이 백그라운드로 들어감');
-          // 예: 현재 상태 저장
+          viewModel.pausePractice();
+          // 현재 상태 저장
           break;
         case AppLifecycleState.detached:
-          print('앱이 종료됨');
+          viewModel.pausePractice();
+          //print('앱이 종료됨');
           break;
         case AppLifecycleState.hidden:
           throw UnimplementedError();

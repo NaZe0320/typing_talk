@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
@@ -13,6 +17,7 @@ import 'package:typing_talk/presentation/features/home/widgets/home_app_bar.dart
 import 'dart:io';
 
 import 'package:typing_talk/presentation/features/home/widgets/profile_widget.dart';
+import 'package:typing_talk/presentation/features/practice/states/saved_practice_state.dart';
 
 class HomeScreen extends BaseScreen {
   const HomeScreen({super.key});
@@ -24,6 +29,11 @@ class HomeScreen extends BaseScreen {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      _checkSavedPractice(context);
+      return null;
+    }, []);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -84,5 +94,50 @@ class HomeScreen extends BaseScreen {
     }
 
     return (false, null);
+  }
+}
+
+Future<void> _checkSavedPractice(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  final hasSavedState = prefs.containsKey('saved_practice_state');
+
+  if (hasSavedState) {
+    final savedStateJson = prefs.getString('saved_practice_state');
+    if (savedStateJson != null) {
+      final savedState = SavedPracticeState.fromJson(jsonDecode(savedStateJson));
+
+      // 저장된 지 24시간이 지났으면 삭제
+      if (DateTime.now().difference(savedState.savedAt).inHours >= 24) {
+        await prefs.remove('saved_practice_state');
+        return;
+      }
+
+      // 사용자에게 이어하기 여부 묻기
+      if (context.mounted) {
+        final shouldResume = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('이어서 연습하기'),
+            content: Text('저장된 연습이 있습니다. 이어서 하시겠습니까?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text('새로 시작'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('이어하기'),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldResume == true && context.mounted) {
+          context.pushNamed(RouteNames.practice);
+        } else if (shouldResume == false) {
+          await prefs.remove('saved_practice_state');
+        }
+      }
+    }
   }
 }

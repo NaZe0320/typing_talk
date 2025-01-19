@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:typing_talk/data/repositories/practice_sentence_repository_impl.dart';
 import 'dart:async';
 import 'package:typing_talk/domain/entities/typing_message.dart';
@@ -8,12 +10,15 @@ import 'package:typing_talk/domain/enums/character_state.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/domain/repositories/practice_sentence_repository.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_state.dart';
+import 'package:typing_talk/presentation/features/practice/states/saved_practice_state.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_setting_view_model.dart';
 
 part 'practice_view_model.g.dart';
 
 @riverpod
 class PracticeViewModel extends _$PracticeViewModel {
+  static const String _savedStateKey = 'saved_practice_state';
+
   late final PracticeSentenceRepository _repository;
   Timer? _practiceTimer;
   DateTime? _startTime;
@@ -36,16 +41,86 @@ class PracticeViewModel extends _$PracticeViewModel {
     final fetchedSentences = _getSentences();
 
     return PracticeState(
-      allMessages: fetchedSentences,
-      displayedMessages: [
-        TypingMessage(
-          content: fetchedSentences[0],
-          type: SentenceType.prompt,
-          status: SentenceStatus.current,
-        )
-      ],
-      practiceMode: settingState.practiceMode, // Set practice mode from settings
+      allMessages: [],
+      displayedMessages: [],
+      practiceMode: PracticeMode.practice,
     );
+  }
+
+  // 상태 초기화 메서드
+  Future<void> initializeState() async {
+    final savedState = await _loadSavedState();
+    if (savedState != null) {
+      state = PracticeState(
+        allMessages: savedState.allMessages,
+        displayedMessages: savedState.displayedMessages
+            .map((content) => TypingMessage(
+                  content: content,
+                  type: SentenceType.prompt,
+                  status: SentenceStatus.current,
+                ))
+            .toList(),
+        practiceMode: savedState.practiceMode,
+        currentMessageIndex: savedState.currentMessageIndex,
+        elapsedSeconds: savedState.elapsedSeconds,
+        currentInput: savedState.currentInput,
+        totalKeystrokes: savedState.totalKeystrokes,
+        actualTotalKeystrokes: savedState.actualTotalKeystrokes,
+        totalCorrectKeystrokes: savedState.totalCorrectKeystrokes,
+      );
+      _accumulatedSeconds = savedState.elapsedSeconds;
+    } else {
+      final settingState = ref.read(practiceSettingViewModelProvider);
+      final fetchedSentences = _getSentences();
+
+      state = PracticeState(
+        allMessages: fetchedSentences,
+        displayedMessages: [
+          TypingMessage(
+            content: fetchedSentences[0],
+            type: SentenceType.prompt,
+            status: SentenceStatus.current,
+          )
+        ],
+        practiceMode: settingState.practiceMode,
+      );
+    }
+  }
+
+  // 상태 저장
+  Future<void> _saveCurrentState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedState = SavedPracticeState(
+      allMessages: state.allMessages,
+      displayedMessages: state.displayedMessages.map((m) => m.content).toList(),
+      practiceMode: state.practiceMode,
+      currentMessageIndex: state.currentMessageIndex,
+      elapsedSeconds: state.elapsedSeconds,
+      currentInput: state.currentInput,
+      totalKeystrokes: state.totalKeystrokes,
+      actualTotalKeystrokes: state.actualTotalKeystrokes,
+      totalCorrectKeystrokes: state.totalCorrectKeystrokes,
+      savedAt: DateTime.now(),
+    );
+
+    await prefs.setString(_savedStateKey, jsonEncode(savedState.toJson()));
+  }
+
+  // 저장된 상태 로드
+  Future<SavedPracticeState?> _loadSavedState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedStateJson = prefs.getString(_savedStateKey);
+
+    if (savedStateJson != null) {
+      return SavedPracticeState.fromJson(jsonDecode(savedStateJson));
+    }
+    return null;
+  }
+
+  // 저장된 상태 제거
+  Future<void> _clearSavedState() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_savedStateKey);
   }
 
   List<String> _getSentences() {
@@ -94,6 +169,7 @@ class PracticeViewModel extends _$PracticeViewModel {
     if (_startTime != null) {
       _pauseTime = DateTime.now();
       _accumulatedSeconds += _pauseTime!.difference(_startTime!).inSeconds;
+      _saveCurrentState(); // 상태 저장
     }
   }
 
@@ -105,6 +181,7 @@ class PracticeViewModel extends _$PracticeViewModel {
   void completePractice() {
     _practiceTimer?.cancel();
     state = state.copyWith(isComplete: true);
+    _clearSavedState(); // 저장된 상태 제거
   }
 
 // 타수(분당) 계산 메서드 수정
