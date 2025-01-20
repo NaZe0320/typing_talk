@@ -96,7 +96,6 @@ class PracticeViewModel extends _$PracticeViewModel {
       savedAt: DateTime.now(),
     );
 
-    print("테스트 저장 : ${savedState.currentInput}");
     await prefs.setString(_savedStateKey, jsonEncode(savedState.toJson()));
   }
 
@@ -159,6 +158,9 @@ class PracticeViewModel extends _$PracticeViewModel {
   }
 
   void pausePractice() {
+    // 이미 일시정지된 상태라면 (타이머가 취소되고 _pauseTime이 설정된 상태) 추가 작업을 하지 않음
+    if (_pauseTime != null) return;
+
     _practiceTimer?.cancel();
     if (_startTime != null) {
       _pauseTime = DateTime.now();
@@ -168,7 +170,11 @@ class PracticeViewModel extends _$PracticeViewModel {
   }
 
   void resumePractice() {
+    // 일시정지 상태가 아니라면 (이미 실행 중이라면) 추가 작업을 하지 않음
+    if (_pauseTime == null) return;
+
     _startTime = DateTime.now();
+    _pauseTime = null; // resumePractice 시 _pauseTime을 null로 초기화
     _startTimer();
   }
 
