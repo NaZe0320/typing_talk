@@ -108,7 +108,6 @@ class PracticeScreen extends BaseScreen {
 
     useEffect(() {
       viewModel.initializeState().then((_) {
-        viewModel.startPractice();
         isInitialized.value = true;
       });
       return null;
@@ -170,6 +169,19 @@ class PracticeScreen extends BaseScreen {
         Expanded(
           child: MessageList(messages: state.displayedMessages),
         ),
+        if (!state.isStarted)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            color: AppColors.secondaryBlue,
+            child: Text(
+              '입력을 시작하면 연습이 시작됩니다',
+              style: AppTypography.b3_5.copyWith(
+                color: AppColors.secondaryText,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
         if (isInitialized.value)
           TypingInput(
             onChanged: viewModel.onTextInput,

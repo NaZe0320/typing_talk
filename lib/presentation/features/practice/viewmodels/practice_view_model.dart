@@ -262,6 +262,13 @@ class PracticeViewModel extends _$PracticeViewModel {
     if (state.currentMessageIndex >= state.allMessages.length) {
       return;
     }
+
+    // 최초 입력 시 타이머 시작
+    if (!state.isStarted && value.isNotEmpty) {
+      state = state.copyWith(isStarted: true);
+      startPractice();
+    }
+
     final targetMessage = state.allMessages[state.currentMessageIndex];
 
     // 입력 문장이 제시 문장보다 긴 경우, 제시 문장 길이만큼만 처리

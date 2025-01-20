@@ -21,5 +21,6 @@ class PracticeState with _$PracticeState {
     @Default(0) int currentCorrectKeystrokes,
     @Default(0) int elapsedSeconds,
     @Default(0) int actualTotalKeystrokes, // 속도 계산용 실제 입력 타수
+    @Default(false) bool isStarted,
   }) = _PracticeState;
 }
