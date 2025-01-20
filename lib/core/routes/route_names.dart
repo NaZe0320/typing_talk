@@ -9,7 +9,7 @@ class RouteNames {
   static const String profile = 'profile';
 
   //통계 관련 화면
-  static const String statistic = 'statistic';
+  static const String statistic = 'statistics';
 
   //설정 관련 화면
   static const String setting = 'setting';

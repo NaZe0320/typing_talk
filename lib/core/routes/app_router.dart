@@ -8,7 +8,7 @@ import 'package:typing_talk/presentation/features/practice/screens/practice_scre
 import 'package:typing_talk/presentation/features/practice/screens/practice_setting_screen.dart';
 import 'package:typing_talk/presentation/features/profile/screens/profile_screen.dart';
 import 'package:typing_talk/presentation/features/setting/screens/setting_screen.dart';
-import 'package:typing_talk/presentation/features/statistic/screens/statistic_screen.dart';
+import 'package:typing_talk/presentation/features/statistics/screens/statistics_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -48,10 +48,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: '/statistic',
-        name: 'statistic',
+        path: '/statistics',
+        name: 'statistics',
         builder: (context, state) {
-          return StatisticScreen();
+          return StatisticsScreen();
         },
       ),
       GoRoute(
