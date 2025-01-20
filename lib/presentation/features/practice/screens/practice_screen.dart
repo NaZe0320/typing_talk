@@ -114,21 +114,16 @@ class PracticeScreen extends BaseScreen {
     useAppLifecycle(ref, (state) {
       switch (state) {
         case AppLifecycleState.resumed:
-          print('앱이 포그라운드로 돌아옴');
-          viewModel.startPractice();
+          viewModel.resumePractice();
           // 예: 데이터 새로고침
           break;
         case AppLifecycleState.inactive:
-          viewModel.pausePractice();
-          //print('앱이 비활성화됨');
+          viewModel.pausePractice(); // 현재 상태 저장
           break;
         case AppLifecycleState.paused:
-          viewModel.pausePractice();
-          // 현재 상태 저장
+          viewModel.pausePractice(); // 현재 상태 저장
           break;
         case AppLifecycleState.detached:
-          viewModel.pausePractice();
-          //print('앱이 종료됨');
           break;
         case AppLifecycleState.hidden:
           throw UnimplementedError();
@@ -175,7 +170,7 @@ class PracticeScreen extends BaseScreen {
         TypingInput(
           onChanged: viewModel.onTextInput,
           onSubmit: viewModel.handleSubmit,
-          targetContent: "",
+          initialText: state.currentInput,
         ),
       ],
     );

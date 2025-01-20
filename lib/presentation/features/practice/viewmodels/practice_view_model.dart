@@ -8,6 +8,8 @@ import 'dart:async';
 import 'package:typing_talk/domain/entities/typing_message.dart';
 import 'package:typing_talk/domain/enums/character_state.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
+import 'package:typing_talk/domain/enums/sentence_status.dart';
+import 'package:typing_talk/domain/enums/sentence_type.dart';
 import 'package:typing_talk/domain/repositories/practice_sentence_repository.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_state.dart';
 import 'package:typing_talk/presentation/features/practice/states/saved_practice_state.dart';
@@ -32,13 +34,9 @@ class PracticeViewModel extends _$PracticeViewModel {
 
   @override
   PracticeState build() {
-    final settingState = ref.watch(practiceSettingViewModelProvider);
-
     ref.onDispose(() {
       _practiceTimer?.cancel();
     });
-
-    final fetchedSentences = _getSentences();
 
     return PracticeState(
       allMessages: [],
@@ -50,16 +48,11 @@ class PracticeViewModel extends _$PracticeViewModel {
   // 상태 초기화 메서드
   Future<void> initializeState() async {
     final savedState = await _loadSavedState();
+
     if (savedState != null) {
       state = PracticeState(
         allMessages: savedState.allMessages,
-        displayedMessages: savedState.displayedMessages
-            .map((content) => TypingMessage(
-                  content: content,
-                  type: SentenceType.prompt,
-                  status: SentenceStatus.current,
-                ))
-            .toList(),
+        displayedMessages: savedState.displayedMessages,
         practiceMode: savedState.practiceMode,
         currentMessageIndex: savedState.currentMessageIndex,
         elapsedSeconds: savedState.elapsedSeconds,
@@ -92,7 +85,7 @@ class PracticeViewModel extends _$PracticeViewModel {
     final prefs = await SharedPreferences.getInstance();
     final savedState = SavedPracticeState(
       allMessages: state.allMessages,
-      displayedMessages: state.displayedMessages.map((m) => m.content).toList(),
+      displayedMessages: state.displayedMessages,
       practiceMode: state.practiceMode,
       currentMessageIndex: state.currentMessageIndex,
       elapsedSeconds: state.elapsedSeconds,
@@ -184,14 +177,14 @@ class PracticeViewModel extends _$PracticeViewModel {
     _clearSavedState(); // 저장된 상태 제거
   }
 
-// 타수(분당) 계산 메서드 수정
+  // 타수(분당) 계산 메서드 수정
   double getTypingSpeed() {
     if (state.elapsedSeconds == 0) return 0;
     // 실제 입력한 타수만으로 속도 계산
     return ((state.actualTotalKeystrokes + state.currentKeystrokes) * 60) / state.elapsedSeconds;
   }
 
-// 정확도 계산 메서드 수정
+  // 정확도 계산 메서드 수정
   double getAccuracy() {
     final totalStrokes = state.totalKeystrokes + state.currentKeystrokes;
     if (totalStrokes == 0) return 0;

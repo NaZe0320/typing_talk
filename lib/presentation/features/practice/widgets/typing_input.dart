@@ -6,13 +6,13 @@ class TypingInput extends StatefulWidget {
   const TypingInput({
     super.key,
     required this.onChanged,
-    required this.targetContent,
     required this.onSubmit,
+    this.initialText = '',
   });
 
   final void Function(String text, int cursorPosition) onChanged;
   final VoidCallback onSubmit;
-  final String targetContent;
+  final String initialText;
 
   @override
   State<TypingInput> createState() => _TypingInputState();

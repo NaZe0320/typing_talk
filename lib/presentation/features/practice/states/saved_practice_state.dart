@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:typing_talk/domain/entities/typing_message.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 
 part 'saved_practice_state.freezed.dart';
@@ -8,7 +9,7 @@ part 'saved_practice_state.g.dart';
 class SavedPracticeState with _$SavedPracticeState {
   const factory SavedPracticeState({
     required List<String> allMessages,
-    required List<String> displayedMessages,
+    required List<TypingMessage> displayedMessages,
     required PracticeMode practiceMode,
     required int currentMessageIndex,
     required int elapsedSeconds,

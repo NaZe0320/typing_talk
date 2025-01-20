@@ -4,6 +4,8 @@ import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
 import 'package:typing_talk/domain/entities/typing_message.dart';
 import 'package:typing_talk/domain/enums/character_state.dart';
+import 'package:typing_talk/domain/enums/sentence_status.dart';
+import 'package:typing_talk/domain/enums/sentence_type.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_view_model.dart';
 
 class MessageBubble extends ConsumerWidget {
