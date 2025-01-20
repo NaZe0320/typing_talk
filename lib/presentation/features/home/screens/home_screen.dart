@@ -104,14 +104,6 @@ Future<void> _checkSavedPractice(BuildContext context) async {
   if (hasSavedState) {
     final savedStateJson = prefs.getString('saved_practice_state');
     if (savedStateJson != null) {
-      final savedState = SavedPracticeState.fromJson(jsonDecode(savedStateJson));
-
-      // 저장된 지 24시간이 지났으면 삭제
-      if (DateTime.now().difference(savedState.savedAt).inHours >= 24) {
-        await prefs.remove('saved_practice_state');
-        return;
-      }
-
       // 사용자에게 이어하기 여부 묻기
       if (context.mounted) {
         final shouldResume = await showDialog<bool>(
@@ -134,7 +126,7 @@ Future<void> _checkSavedPractice(BuildContext context) async {
 
         if (shouldResume == true && context.mounted) {
           context.pushNamed(RouteNames.practice);
-        } else if (shouldResume == false) {
+        } else {
           await prefs.remove('saved_practice_state');
         }
       }

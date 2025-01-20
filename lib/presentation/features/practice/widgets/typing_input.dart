@@ -24,7 +24,7 @@ class _TypingInputState extends State<TypingInput> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = TextEditingController(text: widget.initialText);
     _controller.addListener(_handleTextChange);
   }
 

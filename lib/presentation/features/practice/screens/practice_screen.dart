@@ -104,9 +104,12 @@ class PracticeScreen extends BaseScreen {
     final state = ref.watch(practiceViewModelProvider);
     final viewModel = ref.read(practiceViewModelProvider.notifier);
 
+    final isInitialized = useState(false);
+
     useEffect(() {
       viewModel.initializeState().then((_) {
         viewModel.startPractice();
+        isInitialized.value = true;
       });
       return null;
     }, []);
@@ -167,11 +170,12 @@ class PracticeScreen extends BaseScreen {
         Expanded(
           child: MessageList(messages: state.displayedMessages),
         ),
-        TypingInput(
-          onChanged: viewModel.onTextInput,
-          onSubmit: viewModel.handleSubmit,
-          initialText: state.currentInput,
-        ),
+        if (isInitialized.value)
+          TypingInput(
+            onChanged: viewModel.onTextInput,
+            onSubmit: viewModel.handleSubmit,
+            initialText: state.currentInput,
+          ),
       ],
     );
   }

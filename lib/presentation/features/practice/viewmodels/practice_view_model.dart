@@ -96,6 +96,7 @@ class PracticeViewModel extends _$PracticeViewModel {
       savedAt: DateTime.now(),
     );
 
+    print("테스트 저장 : ${savedState.currentInput}");
     await prefs.setString(_savedStateKey, jsonEncode(savedState.toJson()));
   }
 
