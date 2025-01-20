@@ -17,6 +17,7 @@ import 'package:typing_talk/presentation/features/home/widgets/home_app_bar.dart
 import 'dart:io';
 
 import 'package:typing_talk/presentation/features/home/widgets/profile_widget.dart';
+import 'package:typing_talk/presentation/features/home/widgets/resume_session_dialog.dart';
 import 'package:typing_talk/presentation/features/practice/states/saved_practice_state.dart';
 
 class HomeScreen extends BaseScreen {
@@ -104,31 +105,35 @@ Future<void> _checkSavedPractice(BuildContext context) async {
   if (hasSavedState) {
     final savedStateJson = prefs.getString('saved_practice_state');
     if (savedStateJson != null) {
-      // 사용자에게 이어하기 여부 묻기
-      if (context.mounted) {
-        final shouldResume = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('이어서 연습하기'),
-            content: Text('저장된 연습이 있습니다. 이어서 하시겠습니까?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text('새로 시작'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text('이어하기'),
-              ),
-            ],
-          ),
+      try {
+        final savedState = SavedPracticeState.fromJson(
+          jsonDecode(savedStateJson) as Map<String, dynamic>,
         );
 
-        if (shouldResume == true && context.mounted) {
-          context.pushNamed(RouteNames.practice);
-        } else {
-          await prefs.remove('saved_practice_state');
+        if (context.mounted) {
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => ResumeSessionDialog(
+              savedState: savedState,
+              onResume: () {
+                if (context.mounted) {
+                  context.pushNamed(RouteNames.practice);
+                }
+              },
+              onNewSession: () async {
+                await prefs.remove('saved_practice_state');
+                if (context.mounted) {
+                  context.pushNamed(RouteNames.practiceSetting);
+                }
+              },
+            ),
+          );
         }
+      } catch (e) {
+        // 저장된 상태가 유효하지 않은 경우 삭제
+        await prefs.remove('saved_practice_state');
+        AppLogger.error('저장 상태가 유효하지 않습니다 : $e');
       }
     }
   }
