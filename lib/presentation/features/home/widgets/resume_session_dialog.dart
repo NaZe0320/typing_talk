@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:typing_talk/core/base/base_dialog.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
@@ -21,62 +22,76 @@ class ResumeSessionDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return BaseDialog(
-      icon: const Icon(
-        Icons.restore_rounded,
-        size: 48,
-        color: AppColors.primaryBlue,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        /// 뒤로 가기 시, 데이터 날리기 기능
+        // if (!didPop) {
+        //   final prefs = await SharedPreferences.getInstance();
+        //   await prefs.remove('saved_practice_state');
+        //   if (context.mounted) {
+        //     Navigator.of(context).pop();
+        //   }
+        // }
+      },
+      child: BaseDialog(
+        barrierDismissible: false,
+        icon: const Icon(
+          Icons.restore_rounded,
+          size: 48,
+          color: AppColors.primaryBlue,
+        ),
+        title: '이전 연습 이어하기',
+        content: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.secondaryBlue,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              children: [
+                _buildInfoRow(
+                  Icons.timer_outlined,
+                  '진행 시간',
+                  '${savedState.elapsedSeconds ~/ 60}분 ${savedState.elapsedSeconds % 60}초',
+                ),
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  Icons.save_outlined,
+                  '완료한 문장',
+                  '${savedState.currentMessageIndex}/${savedState.allMessages.length}개',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '저장된 연습 기록이 있습니다.\n이어서 연습하시겠습니까?',
+            style: AppTypography.b2_4.copyWith(
+              color: AppColors.secondaryText,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+        actions: [
+          AppButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              onResume();
+            },
+            text: '이어서 연습하기',
+          ),
+          const SizedBox(height: 8),
+          AppTextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onNewSession();
+            },
+            text: '새로 시작하기',
+          ),
+        ],
       ),
-      title: '이전 연습 이어하기',
-      content: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.secondaryBlue,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            children: [
-              _buildInfoRow(
-                Icons.timer_outlined,
-                '진행 시간',
-                '${savedState.elapsedSeconds ~/ 60}분 ${savedState.elapsedSeconds % 60}초',
-              ),
-              const SizedBox(height: 8),
-              _buildInfoRow(
-                Icons.save_outlined,
-                '완료한 문장',
-                '${savedState.currentMessageIndex}/${savedState.allMessages.length}개',
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          '저장된 연습 기록이 있습니다.\n이어서 연습하시겠습니까?',
-          style: AppTypography.b2_4.copyWith(
-            color: AppColors.secondaryText,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-      actions: [
-        AppButton(
-          onPressed: () async {
-            Navigator.of(context).pop();
-            onResume();
-          },
-          text: '이어서 연습하기',
-        ),
-        const SizedBox(height: 8),
-        AppTextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            onNewSession();
-          },
-          text: '새로 시작하기',
-        ),
-      ],
     );
   }
 
