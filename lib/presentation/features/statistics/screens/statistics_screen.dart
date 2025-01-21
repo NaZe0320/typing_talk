@@ -14,111 +14,116 @@ class StatisticsScreen extends BaseScreen {
   Widget buildContent(BuildContext context, WidgetRef ref) {
     final state = ref.watch(statisticsViewModelProvider);
 
-    if (state.isLoading) {
+    if (state.isLoading && state.records.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 전체 통계
-          Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  title: '평균 속도',
-                  value: '${state.averageSpeed.toStringAsFixed(1)}',
-                  unit: 'WPM',
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.read(statisticsViewModelProvider.notifier).refresh();
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 전체 통계
+            Row(
+              children: [
+                Expanded(
+                  child: _StatCard(
+                    title: '평균 속도',
+                    value: '${state.averageSpeed.toStringAsFixed(1)}',
+                    unit: 'WPM',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  title: '평균 정확도',
-                  value: '${state.averageAccuracy.toStringAsFixed(1)}',
-                  unit: '%',
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          // 기간 선택
-          Row(
-            children: [
-              _PeriodButton(
-                label: '주간',
-                isSelected: state.selectedPeriod == 'week',
-                onTap: () => ref.read(statisticsViewModelProvider.notifier).updatePeriod('week'),
-              ),
-              const SizedBox(width: 8),
-              _PeriodButton(
-                label: '월간',
-                isSelected: state.selectedPeriod == 'month',
-                onTap: () => ref.read(statisticsViewModelProvider.notifier).updatePeriod('month'),
-              ),
-              const SizedBox(width: 8),
-              _PeriodButton(
-                label: '연간',
-                isSelected: state.selectedPeriod == 'year',
-                onTap: () => ref.read(statisticsViewModelProvider.notifier).updatePeriod('year'),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          // 그래프
-          Container(
-            height: 200,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _StatCard(
+                    title: '평균 정확도',
+                    value: '${state.averageAccuracy.toStringAsFixed(1)}',
+                    unit: '%',
+                  ),
                 ),
               ],
             ),
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: state.records.asMap().entries.map((entry) {
-                      return FlSpot(
-                        entry.key.toDouble(),
-                        entry.value.typingSpeed,
-                      );
-                    }).toList(),
-                    isCurved: true,
-                    color: AppColors.primaryBlue,
-                    barWidth: 2,
-                    dotData: FlDotData(show: false),
+
+            const SizedBox(height: 24),
+
+            // 기간 선택
+            Row(
+              children: [
+                _PeriodButton(
+                  label: '주간',
+                  isSelected: state.selectedPeriod == 'week',
+                  onTap: () => ref.read(statisticsViewModelProvider.notifier).updatePeriod('week'),
+                ),
+                const SizedBox(width: 8),
+                _PeriodButton(
+                  label: '월간',
+                  isSelected: state.selectedPeriod == 'month',
+                  onTap: () => ref.read(statisticsViewModelProvider.notifier).updatePeriod('month'),
+                ),
+                const SizedBox(width: 8),
+                _PeriodButton(
+                  label: '연간',
+                  isSelected: state.selectedPeriod == 'year',
+                  onTap: () => ref.read(statisticsViewModelProvider.notifier).updatePeriod('year'),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // 그래프
+            Container(
+              height: 200,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
+              child: LineChart(
+                LineChartData(
+                  gridData: FlGridData(show: false),
+                  titlesData: FlTitlesData(show: false),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: state.records.asMap().entries.map((entry) {
+                        return FlSpot(
+                          entry.key.toDouble(),
+                          entry.value.typingSpeed,
+                        );
+                      }).toList(),
+                      isCurved: true,
+                      color: AppColors.primaryBlue,
+                      barWidth: 2,
+                      dotData: FlDotData(show: false),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // 최근 기록
-          Text(
-            '최근 기록',
-            style: AppTypography.h3_6,
-          ),
-          const SizedBox(height: 12),
-          ...state.records.take(5).map((record) => _RecordCard(record: record)),
-        ],
+            // 최근 기록
+            Text(
+              '최근 기록',
+              style: AppTypography.h3_6,
+            ),
+            const SizedBox(height: 12),
+            ...state.records.take(5).map((record) => _RecordCard(record: record)),
+          ],
+        ),
       ),
     );
   }
