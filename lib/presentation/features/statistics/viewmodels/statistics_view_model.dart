@@ -42,6 +42,7 @@ class StatisticsViewModel extends _$StatisticsViewModel {
 
     try {
       final now = DateTime.now();
+      print("타자");
       final records = await _repository?.getRecords() ?? [];
 
       // 선택된 기간에 따라 필터링
