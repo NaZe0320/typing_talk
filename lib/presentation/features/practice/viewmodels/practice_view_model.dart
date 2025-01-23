@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:typing_talk/core/utils/app_logger.dart';
+import 'package:typing_talk/core/utils/storage_manager.dart';
 import 'package:typing_talk/data/repositories/practice_sentence_repository_impl.dart';
 import 'dart:async';
 import 'package:typing_talk/domain/entities/typing_message.dart';
@@ -80,40 +82,52 @@ class PracticeViewModel extends _$PracticeViewModel {
     }
   }
 
-  // 상태 저장
+// 상태 저장
   Future<void> _saveCurrentState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedState = SavedPracticeState(
-      allMessages: state.allMessages,
-      displayedMessages: state.displayedMessages,
-      practiceMode: state.practiceMode,
-      currentMessageIndex: state.currentMessageIndex,
-      elapsedSeconds: state.elapsedSeconds,
-      currentInput: state.currentInput,
-      totalKeystrokes: state.totalKeystrokes,
-      actualTotalKeystrokes: state.actualTotalKeystrokes,
-      totalCorrectKeystrokes: state.totalCorrectKeystrokes,
-      savedAt: DateTime.now(),
-    );
+    try {
+      final savedState = SavedPracticeState(
+        allMessages: state.allMessages,
+        displayedMessages: state.displayedMessages,
+        practiceMode: state.practiceMode,
+        currentMessageIndex: state.currentMessageIndex,
+        elapsedSeconds: state.elapsedSeconds,
+        currentInput: state.currentInput,
+        totalKeystrokes: state.totalKeystrokes,
+        actualTotalKeystrokes: state.actualTotalKeystrokes,
+        totalCorrectKeystrokes: state.totalCorrectKeystrokes,
+        savedAt: DateTime.now(),
+      );
 
-    await prefs.setString(_savedStateKey, jsonEncode(savedState.toJson()));
-  }
-
-  // 저장된 상태 로드
-  Future<SavedPracticeState?> _loadSavedState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedStateJson = prefs.getString(_savedStateKey);
-
-    if (savedStateJson != null) {
-      return SavedPracticeState.fromJson(jsonDecode(savedStateJson));
+      await StorageManager.saveUserData(_savedStateKey, jsonEncode(savedState.toJson()));
+      AppLogger.info('연습 상태 저장 완료');
+    } catch (e) {
+      AppLogger.error('연습 상태 저장 실패: $e');
     }
-    return null;
   }
 
-  // 저장된 상태 제거
+  Future<SavedPracticeState?> _loadSavedState() async {
+    try {
+      final savedStateJson = StorageManager.getUserData<String>(_savedStateKey);
+      if (savedStateJson != null) {
+        final savedState = SavedPracticeState.fromJson(jsonDecode(savedStateJson));
+        AppLogger.info('연습 상태 로드 완료');
+        return savedState;
+      }
+      return null;
+    } catch (e) {
+      AppLogger.error('연습 상태 로드 실패: $e');
+      return null;
+    }
+  }
+
+// 저장된 상태 제거
   Future<void> _clearSavedState() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_savedStateKey);
+    try {
+      await StorageManager.removeUserData(_savedStateKey);
+      AppLogger.info('연습 상태 제거 완료');
+    } catch (e) {
+      AppLogger.error('연습 상태 제거 실패: $e');
+    }
   }
 
   List<String> _getSentences() {

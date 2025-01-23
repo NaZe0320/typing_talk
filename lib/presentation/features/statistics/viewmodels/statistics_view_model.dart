@@ -28,11 +28,6 @@ class StatisticsViewModel extends _$StatisticsViewModel {
     _repository = await TypingRecordRepositoryImpl.create();
     // 초기 데이터 로드
     await _loadRecords();
-
-    // 3초마다 데이터 자동 갱신
-    _refreshTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      _loadRecords();
-    });
   }
 
   Future<void> _loadRecords() async {
