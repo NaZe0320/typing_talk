@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:typing_talk/core/routes/app_router.dart';
 import 'package:typing_talk/core/utils/storage_manager.dart';
+import 'package:typing_talk/data/models/text_collection_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,7 @@ void main() async {
   // StorageManager 초기화
   await StorageManager.init();
 
+  Hive.registerAdapter(TextCollectionModelAdapter());
   runApp(const ProviderScope(child: MyApp()));
 }
 

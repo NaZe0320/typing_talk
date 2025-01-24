@@ -8,12 +8,14 @@ class StorageManager {
   static const String _cacheBoxName = 'cache';
   static const String _settingsBoxName = 'settings';
   static const String _typingRecordsBoxName = 'typingRecords'; // 타자 기록용
+  static const String _textCollectionBoxName = 'textCollections';
 
   static late SharedPreferences _prefs;
   static late Box _userBox;
   static late Box _cacheBox;
   static late Box _settingsBox;
   static late Box _typingRecordsBox;
+  static late Box _textCollectionBox;
 
   static bool _initialized = false;
 
@@ -34,6 +36,7 @@ class StorageManager {
       _cacheBox = await Hive.openBox(_cacheBoxName);
       _settingsBox = await Hive.openBox(_settingsBoxName);
       _typingRecordsBox = await Hive.openBox(_typingRecordsBoxName);
+      _textCollectionBox = await Hive.openBox(_textCollectionBoxName);
 
       _initialized = true;
       AppLogger.info('StorageManager 초기화 완료');
@@ -154,6 +157,7 @@ class StorageManager {
       await _userBox.close();
       await _cacheBox.close();
       await _settingsBox.close();
+      await _textCollectionBox.close();
       _initialized = false;
       AppLogger.info('StorageManager 종료 완료');
     } catch (e) {
