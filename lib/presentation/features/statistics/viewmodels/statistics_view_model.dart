@@ -1,8 +1,7 @@
-// lib/presentation/features/statistics/viewmodels/statistics_view_model.dart
-
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:typing_talk/core/utils/app_logger.dart';
 import 'package:typing_talk/data/repositories/typing_record_repository_impl.dart';
 import 'package:typing_talk/domain/entities/typing_record.dart';
 import 'package:typing_talk/presentation/features/statistics/states/statistics_state.dart';
@@ -11,7 +10,7 @@ part 'statistics_view_model.g.dart';
 
 @riverpod
 class StatisticsViewModel extends _$StatisticsViewModel {
-  TypingRecordRepositoryImpl? _repository;
+  final _repository = TypingRecordRepositoryImpl();
   Timer? _refreshTimer;
 
   @override
@@ -20,25 +19,18 @@ class StatisticsViewModel extends _$StatisticsViewModel {
       _refreshTimer?.cancel();
     });
 
-    _initRepository();
+    _loadRecords();
     return const StatisticsState();
   }
 
-  Future<void> _initRepository() async {
-    _repository = await TypingRecordRepositoryImpl.create();
-    // 초기 데이터 로드
-    await _loadRecords();
-  }
-
   Future<void> _loadRecords() async {
-    if (state.isLoading) return; // 이미 로딩 중이면 스킵
+    if (state.isLoading) return;
 
     state = state.copyWith(isLoading: true);
 
     try {
       final now = DateTime.now();
-      print("타자");
-      final records = await _repository?.getRecords() ?? [];
+      final records = await _repository.getRecords();
 
       // 선택된 기간에 따라 필터링
       final filteredRecords = records.where((record) {
@@ -70,7 +62,10 @@ class StatisticsViewModel extends _$StatisticsViewModel {
         averageAccuracy: averageAccuracy,
         isLoading: false,
       );
+
+      AppLogger.info('통계 데이터 로드 성공: ${filteredRecords.length}개의 기록');
     } catch (e) {
+      AppLogger.error('통계 데이터 로드 실패: $e');
       state = state.copyWith(
         error: e.toString(),
         isLoading: false,

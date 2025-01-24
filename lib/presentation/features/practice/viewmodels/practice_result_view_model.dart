@@ -9,7 +9,7 @@ part 'practice_result_view_model.g.dart';
 
 @riverpod
 class PracticeResultViewModel extends _$PracticeResultViewModel {
-  TypingRecordRepositoryImpl? _repository;
+  final _repository = TypingRecordRepositoryImpl();
 
   @override
   PracticeResultState build() {
@@ -25,12 +25,7 @@ class PracticeResultViewModel extends _$PracticeResultViewModel {
       createdAt: DateTime.now(),
     );
 
-    TypingRecordRepositoryImpl.create().then((repo) {
-      _repository = repo;
-      _saveRecord(record);
-
-      getRecentRecords();
-    });
+    _saveRecord(record);
 
     return PracticeResultState(
       practiceMode: practiceState.practiceMode,
@@ -44,20 +39,18 @@ class PracticeResultViewModel extends _$PracticeResultViewModel {
 
   Future<void> _saveRecord(TypingRecord record) async {
     try {
-      if (_repository != null) {
-        await _repository?.saveRecord(record);
-      } else {}
+      await _repository.saveRecord(record);
+      AppLogger.info('타자 기록 저장 성공');
     } catch (e) {
-      AppLogger.error('기록 저장 실패: $e');
+      AppLogger.error('타자 기록 저장 실패: $e');
     }
   }
 
   Future<List<TypingRecord>> getRecentRecords({int limit = 10}) async {
     try {
-      final record = await _repository?.getRecords(limit: limit) ?? [];
-      return record;
+      return await _repository.getRecords(limit: limit);
     } catch (e) {
-      AppLogger.error('기록 조회 실패: $e');
+      AppLogger.error('최근 기록 조회 실패: $e');
       return [];
     }
   }

@@ -1,6 +1,8 @@
 import 'package:typing_talk/domain/repositories/practice_sentence_repository.dart';
 
 class PracticeSentenceRepositoryImpl implements PracticeSentenceRepository {
+  static const String _textCollectionsKey = 'text_collections';
+
   // 실제로는 DB나 API에서 가져올 데이터
   final Map<int, List<String>> _sentencesMap = {
     10: [
