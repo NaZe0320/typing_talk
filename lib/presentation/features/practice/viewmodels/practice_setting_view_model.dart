@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:typing_talk/domain/entities/text_item.dart';
+import 'package:typing_talk/data/repositories/text_collection_repository_impl.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_setting_state.dart';
 
@@ -7,19 +7,16 @@ part 'practice_setting_view_model.g.dart';
 
 @riverpod
 class PracticeSettingViewModel extends _$PracticeSettingViewModel {
-  PracticeSettingViewModel(); // 기본 생성자 추가
+  late final TextCollectionRepositoryImpl _repository;
 
+  PracticeSettingViewModel() {
+    _repository = TextCollectionRepositoryImpl();
+  }
   @override
   PracticeSettingState build() {
-    final texts = [
-      const TextItem(id: 10, title: "일상 대화 모음", difficulty: "쉬움", length: "짧음"),
-      const TextItem(id: 223, title: "비즈니스 이메일", difficulty: "중간", length: "중간"),
-      const TextItem(id: 32, title: "IT 용어 모음", difficulty: "어려움", length: "중간"),
-      const TextItem(id: 45, title: "문학 작품 발췌", difficulty: "중간", length: "긺"),
-      const TextItem(id: 57, title: "뉴스 기사", difficulty: "중간", length: "중간"),
-    ];
+    final availableTexts = _repository.getAllCollections();
 
-    return PracticeSettingState(availableTexts: texts);
+    return PracticeSettingState(availableTexts: availableTexts);
   }
 
   void togglePracticeMode(PracticeMode mode) {
@@ -47,8 +44,12 @@ class PracticeSettingViewModel extends _$PracticeSettingViewModel {
     );
   }
 
-  // 선택된 문장들 가져오기
+  // Get selected sentences from repository
   List<String> getSelectedSentences() {
-    return state.availableTexts.where((text) => state.selectedTexts.contains(text.id)).map((e) => e.title).toList();
+    List<String> sentences = [];
+    for (var id in state.selectedTexts) {
+      sentences.addAll(_repository.getTextCollectionByTextId(id));
+    }
+    return sentences;
   }
 }

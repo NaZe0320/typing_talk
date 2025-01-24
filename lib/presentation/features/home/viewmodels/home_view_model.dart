@@ -1,8 +1,10 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:typing_talk/core/base/base_intent.dart';
 import 'package:typing_talk/core/base/base_view_model.dart';
 import 'package:typing_talk/presentation/features/home/intents/home_intent.dart';
 import 'package:typing_talk/presentation/features/home/states/home_state.dart';
 
+@riverpod
 class HomeViewModel extends BaseViewModel<HomeIntent, HomeState> {
   HomeViewModel(super.state);
 

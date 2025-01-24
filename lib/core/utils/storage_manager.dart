@@ -1,18 +1,16 @@
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:typing_talk/core/utils/app_logger.dart';
+import 'package:typing_talk/data/models/text_collection_model.dart';
 
 class StorageManager {
   static const String _userBoxName = 'userData';
-  static const String _cacheBoxName = 'cache';
   static const String _settingsBoxName = 'settings';
   static const String _typingRecordsBoxName = 'typingRecords'; // 타자 기록용
   static const String _textCollectionBoxName = 'textCollections';
 
   static late SharedPreferences _prefs;
   static late Box _userBox;
-  static late Box _cacheBox;
   static late Box _settingsBox;
   static late Box _typingRecordsBox;
   static late Box _textCollectionBox;
@@ -33,7 +31,6 @@ class StorageManager {
 
       // 각 목적별 Box 초기화
       _userBox = await Hive.openBox(_userBoxName);
-      _cacheBox = await Hive.openBox(_cacheBoxName);
       _settingsBox = await Hive.openBox(_settingsBoxName);
       _typingRecordsBox = await Hive.openBox(_typingRecordsBoxName);
       _textCollectionBox = await Hive.openBox(_textCollectionBoxName);
@@ -44,6 +41,26 @@ class StorageManager {
       AppLogger.error('StorageManager 초기화 실패: $e');
       rethrow;
     }
+  }
+
+  static Box get userBox {
+    _checkInitialization();
+    return _userBox;
+  }
+
+  static Box get settingsBox {
+    _checkInitialization();
+    return _settingsBox;
+  }
+
+  static Box get typingRecordsBox {
+    _checkInitialization();
+    return _typingRecordsBox;
+  }
+
+  static Box get textCollectionBox {
+    _checkInitialization();
+    return _textCollectionBox;
   }
 
   /// 초기화 여부 확인
@@ -89,42 +106,6 @@ class StorageManager {
     }
   }
 
-  // 캐시 데이터 관련 메서드
-
-  /// 캐시 데이터 저장
-  static Future<void> saveCacheData(String key, dynamic data) async {
-    _checkInitialization();
-    try {
-      await _cacheBox.put(key, data);
-    } catch (e) {
-      AppLogger.error('캐시 데이터 저장 실패: $e');
-      rethrow;
-    }
-  }
-
-  /// 캐시 데이터 조회
-  static T? getCacheData<T>(String key) {
-    _checkInitialization();
-    try {
-      return _cacheBox.get(key) as T?;
-    } catch (e) {
-      AppLogger.error('캐시 데이터 조회 실패: $e');
-      return null;
-    }
-  }
-
-  /// 모든 캐시 데이터 삭제
-  static Future<void> clearCache() async {
-    _checkInitialization();
-    try {
-      await _cacheBox.clear();
-      AppLogger.info('캐시 데이터 전체 삭제 완료');
-    } catch (e) {
-      AppLogger.error('캐시 데이터 삭제 실패: $e');
-      rethrow;
-    }
-  }
-
   // 설정 데이터 관련 메서드
 
   /// 설정 데이터 저장
@@ -155,7 +136,6 @@ class StorageManager {
     _checkInitialization();
     try {
       await _userBox.close();
-      await _cacheBox.close();
       await _settingsBox.close();
       await _textCollectionBox.close();
       _initialized = false;

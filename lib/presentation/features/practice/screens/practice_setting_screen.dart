@@ -5,11 +5,11 @@ import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
-import 'package:typing_talk/domain/entities/text_item.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/common/widgets/buttons/app_button.dart';
 import 'package:typing_talk/presentation/common/widgets/default_app_bar.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_setting_view_model.dart';
+import 'package:typing_talk/presentation/features/practice/widgets/text_collection_item.dart';
 
 class PracticeSettingScreen extends BaseScreen {
   const PracticeSettingScreen({super.key});
@@ -72,7 +72,7 @@ class PracticeSettingScreen extends BaseScreen {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  ...state.availableTexts.map((text) => _buildTextItem(
+                  ...state.availableTexts.map((text) => TextCollectionItem(
                         text: text,
                         isSelected: state.selectedTexts.contains(text.id),
                         onTap: () => viewModel.toggleTextSelection(text.id),
@@ -204,81 +204,6 @@ class PracticeSettingScreen extends BaseScreen {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextItem({
-    required TextItem text,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondaryBlue : AppColors.surface,
-          border: Border.all(color: isSelected ? AppColors.primaryBlue : AppColors.surface, width: 1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    text.title,
-                    style: AppTypography.b3_5.copyWith(
-                      color: isSelected ? AppColors.primaryBlue : AppColors.primaryText,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      _buildTag(text.difficulty),
-                      const SizedBox(width: 8),
-                      _buildTag(text.length),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              Container(
-                width: 24,
-                height: 24,
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryBlue,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check,
-                  color: AppColors.white,
-                  size: 16,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTag(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        text,
-        style: AppTypography.cap_4.copyWith(
-          color: AppColors.secondaryText,
         ),
       ),
     );

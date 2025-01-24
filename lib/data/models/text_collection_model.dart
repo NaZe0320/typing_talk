@@ -14,16 +14,12 @@ class TextCollectionModel extends HiveObject {
   final List<String> sentences;
 
   @HiveField(3)
-  final String difficulty;
-
-  @HiveField(4)
-  final String length;
+  final String description;
 
   TextCollectionModel({
     required this.id,
     required this.title,
     required this.sentences,
-    required this.difficulty,
-    required this.length,
+    required this.description,
   });
 }
