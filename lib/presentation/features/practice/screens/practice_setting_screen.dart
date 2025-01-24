@@ -5,6 +5,7 @@ import 'package:typing_talk/core/base/base_screen.dart';
 import 'package:typing_talk/core/routes/route_names.dart';
 import 'package:typing_talk/core/theme/app_colors.dart';
 import 'package:typing_talk/core/theme/app_fonts.dart';
+import 'package:typing_talk/data/models/text_collection_model.dart';
 import 'package:typing_talk/domain/entities/text_item.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/presentation/common/widgets/buttons/app_button.dart';
@@ -210,7 +211,7 @@ class PracticeSettingScreen extends BaseScreen {
   }
 
   Widget _buildTextItem({
-    required TextItem text,
+    required TextCollectionModel text,
     required bool isSelected,
     required VoidCallback onTap,
   }) {

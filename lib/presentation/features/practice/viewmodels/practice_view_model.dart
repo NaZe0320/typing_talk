@@ -5,14 +5,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:typing_talk/core/utils/app_logger.dart';
 import 'package:typing_talk/core/utils/storage_manager.dart';
-import 'package:typing_talk/data/repositories/practice_sentence_repository_impl.dart';
+import 'package:typing_talk/data/repositories/text_collection_repository_impl.dart';
 import 'dart:async';
 import 'package:typing_talk/domain/entities/typing_message.dart';
 import 'package:typing_talk/domain/enums/character_state.dart';
 import 'package:typing_talk/domain/enums/practice_mode.dart';
 import 'package:typing_talk/domain/enums/sentence_status.dart';
 import 'package:typing_talk/domain/enums/sentence_type.dart';
-import 'package:typing_talk/domain/repositories/practice_sentence_repository.dart';
+import 'package:typing_talk/domain/repositories/text_collection_repository.dart';
 import 'package:typing_talk/presentation/features/practice/states/practice_state.dart';
 import 'package:typing_talk/presentation/features/practice/states/saved_practice_state.dart';
 import 'package:typing_talk/presentation/features/practice/viewmodels/practice_setting_view_model.dart';
@@ -23,7 +23,7 @@ part 'practice_view_model.g.dart';
 class PracticeViewModel extends _$PracticeViewModel {
   static const String _savedStateKey = 'saved_practice_state';
 
-  late final PracticeSentenceRepository _repository;
+  late final TextCollectionRepository _repository;
   Timer? _practiceTimer;
   DateTime? _startTime;
   DateTime? _pauseTime;
@@ -31,7 +31,7 @@ class PracticeViewModel extends _$PracticeViewModel {
   static const int testModeDuration = 300;
 
   PracticeViewModel() {
-    _repository = PracticeSentenceRepositoryImpl();
+    _repository = TextCollectionRepositoryImpl();
   }
 
   @override
@@ -134,7 +134,7 @@ class PracticeViewModel extends _$PracticeViewModel {
     final settingState = ref.watch(practiceSettingViewModelProvider);
 
     final allSentences =
-        settingState.selectedTexts.expand((textId) => _repository.getSentencesByTextId(textId)).toList();
+        settingState.selectedTexts.expand((textId) => _repository.getTextCollectionByTextId(textId)).toList();
 
     return allSentences;
   }
