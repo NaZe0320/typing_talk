@@ -58,8 +58,7 @@ class AppTypography {
   static final btn_6 = _createStyle(fontSize: 14, fontWeight: FontWeight.w600);
 
   // Label (14px)
-  static final label_4 =
-      _createStyle(fontSize: 14, fontWeight: FontWeight.w400);
+  static final label_4 = _createStyle(fontSize: 14, fontWeight: FontWeight.w400);
 
   // Caption (12px)
   static final cap_4 = _createStyle(fontSize: 12, fontWeight: FontWeight.w400);

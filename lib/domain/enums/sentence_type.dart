@@ -1,0 +1,1 @@
+enum SentenceType { prompt, submitted }

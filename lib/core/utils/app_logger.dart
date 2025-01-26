@@ -4,7 +4,7 @@ class AppLogger {
   static final Logger _logger = Logger(
       printer: PrettyPrinter(
           methodCount: 0,
-          errorMethodCount: 5,
+          errorMethodCount: 1,
           lineLength: 50,
           colors: true,
           printEmojis: true,

@@ -1,0 +1,1 @@
+enum SentenceStatus { current, completed }

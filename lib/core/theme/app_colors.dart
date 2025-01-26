@@ -10,6 +10,11 @@ class AppColors {
   static const Color gray800 = Color(0xFF27272A);
   static const Color gray700 = Color(0xFF3F3F46);
   static const Color gray600 = Color(0xFF52525B);
+  static const Color gray500 = Color(0xFF71717A);
+  static const Color gray400 = Color(0xFFA1A1AA);
+  static const Color gray300 = Color(0xFFD4D4D8);
+  static const Color gray200 = Color(0xFFE4E4E7);
+  static const Color gray100 = Color(0xFFF4F4F5);
 
   // Background Colors
   static const Color white = Color(0xFFFFFFFF);
@@ -21,7 +26,9 @@ class AppColors {
   // Text Colors
   static const Color primaryText = Color(0xFF1E293B);
   static const Color secondaryText = Color(0xFF64748B);
-  static const Color pointWhite = Color(0xFFFFFFFF);
+  static const Color disabledText = Color(0xFFA1A1AA);
+  static const Color pointWhite = Color(0xFF2196F3);
+  static const Color blueText = Color(0xFF1976D2);
 
   // State Colors
   static const Color successBackground = Color(0xFFDCFCE7);
